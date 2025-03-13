@@ -336,8 +336,11 @@ message Cors {
     // Список HTTP методов, доступны - GET/POST/PUT/DELETE/HEAD
     repeated string http_method = 2;
 
-    // Список разрешенных HTTP заголовков
-    repeated string http_header = 3;
+    // Список HTTP заголовков разрешенных в запросе к объекту
+    repeated string access_control_allow_headers = 3;
+
+    // Список HTTP заголовков доступных клиенту при обработке ответа сервера
+    repeated string access_control_expose_headers = 6;
 
     // Время кеширования CORS для браузера
     uint64 cache_ttl = 4;
