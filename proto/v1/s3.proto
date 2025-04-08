@@ -85,7 +85,7 @@ service S3Service {
         };
     }
 
-    // Включить/выключить доступ к бакету по FTP
+    // Включить/выключить доступ к бакету по FTP и SFTP
     rpc enableFtp(EnableFtpRequest) returns (EnableFtpResponse) {
         option (google.api.http) = {
             patch: "/v1/cloud/s3/{service_id}/enable-ftp",
