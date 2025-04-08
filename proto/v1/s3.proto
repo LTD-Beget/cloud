@@ -84,6 +84,14 @@ service S3Service {
             get: "/v1/cloud/s3/prefix",
         };
     }
+
+    // Включить/выключить доступ к бакету по FTP и SFTP
+    rpc enableFtp(EnableFtpRequest) returns (EnableFtpResponse) {
+        option (google.api.http) = {
+            patch: "/v1/cloud/s3/{service_id}/enable-ftp",
+            body: "*"
+        };
+    }
 }
 
 message GetQuotaRequest {
@@ -249,6 +257,40 @@ message ChangePublicResponse {
     }
 }
 
+message EnableFtpRequest {
+    // Идентификатор сервиса в формате uuid v4
+    string service_id = 1;
+
+    // Включить/выключить доступ
+    bool enable = 2;
+}
+
+message EnableFtpResponse {
+    oneof result {
+        // Результат запроса: информация о сервисе
+        S3 s3 = 1;
+
+        // Результат запроса: ошибка при обновлении информации о сервисе
+        Error error = 2;
+    }
+
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 3;
+        }
+    }
+}
+
 message GetPriceRequest {
 }
 
@@ -327,6 +369,40 @@ message S3 {
 
     // Используемая квота в MB
     uint32 quota_used_size = 6;
+
+    // Данные о FTP доступе
+    Ftp ftp = 7;
+
+    // Данные о SFTP доступе
+    Sftp sftp = 8;
+}
+
+message Ftp {
+    string host = 1;
+    uint32 port = 2;
+    string login = 3;
+    string password = 4;
+    Status status = 5;
+
+    enum Status {
+        ENABLED = 0;
+        DISABLED = 1;
+        BLOCKED = 2;
+    }
+}
+
+message Sftp {
+    string host = 1;
+    uint32 port = 2;
+    string login = 3;
+    string password = 4;
+    Status status = 5;
+
+    enum Status {
+        ENABLED = 0;
+        DISABLED = 1;
+        BLOCKED = 2;
+    }
 }
 
 message Cors {
