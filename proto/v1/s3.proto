@@ -69,7 +69,7 @@ service S3Service {
 
     // Узнать тарификацию облачного хранилища S3
     //
-    // Возвращает стоимость в день по подписке и стоимость в день дополнительной тарификации за 1 GB.
+    // Возвращает стоимость услуги в день и количество используемых GB.
     rpc getPrice(GetPriceRequest) returns (GetPriceResponse) {
         option (google.api.http) = {
             get: "/v1/cloud/s3/price",
@@ -98,11 +98,8 @@ message GetQuotaRequest {
 }
 
 message GetQuotaResponse {
-    // Общее количество используемой квоты(в том числе дополнительной) в MB
+    // Общее количество используемой квоты в MB
     uint32 used_size = 1;
-
-    // Количество оставшейся квоты в MB доступной по подписке
-    uint32 available_size = 2;
 }
 
 message ChangeAccessKeyRequest {
@@ -295,11 +292,11 @@ message GetPriceRequest {
 }
 
 message GetPriceResponse {
-    // Тарификация в день по подписке
-    double rate_day = 1;
+    // Тарификация в день за весь используемый объем хранилища
+    double rate_day = 3;
 
-    // Дополнительная тарификация(сверх подписки) в день за 1 GB
-    double rate_day_overload = 2;
+    // Объем данных в хранилище в GB
+    uint32 size = 4;
 }
 
 message GetPrefixRequest {
