@@ -292,11 +292,27 @@ message GetPriceRequest {
 }
 
 message GetPriceResponse {
-    // Тарификация в день за весь используемый объем хранилища
-    double rate_day = 3;
+    repeated Bucket bucket = 5;
 
-    // Объем данных в хранилище в GB
-    uint32 size = 4;
+    message Bucket {
+        // Имя бакета
+        string name = 1;
+
+        // Имя бакета для отображения
+        string display_name = 2;
+
+        // Объем данных в хранилище в Мб (максимальный за день)
+        uint32 storage_size = 3;
+
+        // Стоимость хранения данных в день
+        double storage_rate = 4;
+
+        // Использование трафика за день в Мб
+        uint32 traffic_amount = 5;
+
+        // Стоимость использованного трафика за день
+        double traffic_rate = 6;
+    }
 }
 
 message GetPrefixRequest {
@@ -423,12 +439,12 @@ message Cors {
 }
 
 message S3Configuration {
-    // Доступное место по подписке
-    uint32 subscription_disk_size = 1;
+    // Бесплатное количество трафика в месяц в Мб
+    uint32 free_traffic_amount = 4;
 
-    // Стоимость за каждый последующий гигабайт сверх подписки в день
-    double price_overload_day = 2;
+    // Стоимость за один гигабайт трафика в день
+    double traffic_price_day = 5;
 
-    // Стоимость за каждый последующий гигабайт сверх подписки в месяц
-    double price_overload_month = 3;
+    // Стоимость за один гигабайт трафика в месяц
+    double traffic_price_month = 6;
 }
