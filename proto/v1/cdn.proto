@@ -1,0 +1,697 @@
+syntax = 'proto3';
+
+package beget.cloud.v1.cdn;
+import "google/api/annotations.proto";
+
+// Управление CDN
+//
+// Предоставляет набор методов для работы с CDN.
+service CdnService {
+    // Поменять домены для раздачи контента
+    //
+    // Выполняет смену доменов для раздачи контента CDN.
+    //
+    // Для получения доступных идентификаторов сервисов `service_id` необходимо использовать метод
+    // "Получить информацию о сервисах" из API "Управляемые сервисы".
+    rpc changeResourceDomains(ChangeResourceDomainsRequest) returns (ChangeResourceDomainsResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloud/cdn/{service_id}/resource-domains",
+            body: "*"
+        };
+    }
+
+    // Получить информацию о доменах источниках контента
+    //
+    // Возвращает информацию о доменах для всех CDN
+    // которые выступают в качестве источника контента
+    rpc getSourceDomains(GetSourceDomainsRequest) returns (GetSourceDomainsResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloud/cdn/source-domains"
+        };
+    }
+
+    // Изменить настройки CDN
+    //
+    // Выполняет изменение различных настроек CDN.
+    //
+    // Для получения доступных идентификаторов сервисов `service_id` необходимо использовать метод
+    // "Получить информацию о сервисах" из API "Управляемые сервисы".
+    rpc changeSetting(ChangeSettingRequest) returns (ChangeSettingResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloud/cdn/{service_id}/setting",
+            body: "*"
+        };
+    }
+
+    // Очистить весь кеш для CDN ресурса
+    //
+    // Выполняет очистку всего кеша CDN
+    //
+    // Для получения доступных идентификаторов сервисов `service_id` необходимо использовать метод
+    // "Получить информацию о сервисах" из API "Управляемые сервисы".
+    rpc purgeAllCache(PurgeAllCacheRequest) returns (PurgeAllCacheResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloud/cdn/{service_id}/purge-all-cache"
+        };
+    }
+
+    // Очистить кеш для CDN ресурса по заданным путям
+    //
+    // Выполняет очистку кеша CDN по заданным путям
+    //
+    // Для получения доступных идентификаторов сервисов `service_id` необходимо использовать метод
+    // "Получить информацию о сервисах" из API "Управляемые сервисы".
+    rpc purgeCacheByPaths(PurgeCacheByPathsRequest) returns (PurgeCacheByPathsResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloud/cdn/{service_id}/purge-cache-by-paths",
+            body: "*"
+        };
+    }
+
+    // Выполнить предзагрузку данных в кеш
+    //
+    // Выполняет предзагрузку данных в кеш по определенным путям
+    //
+    // Для получения доступных идентификаторов сервисов `service_id` необходимо использовать метод
+    // "Получить информацию о сервисах" из API "Управляемые сервисы".
+    rpc preloadCacheByPaths(PreloadCacheByPathsRequest) returns (PreloadCacheByPathsResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloud/cdn/{service_id}/preload-cache-by-paths",
+            body: "*"
+        };
+    }
+}
+
+message ChangeResourceDomainsRequest {
+    // Идентификатор CDN, в формате uuid v4
+    string service_id = 1;
+
+    repeated string domain = 2;
+}
+
+message ChangeResourceDomainsResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о доменах
+        ResourceDomains resource_domain = 1;
+
+        // Результат запроса: ошибка при смене доменов
+        Errors error = 2;
+    }
+
+    message ResourceDomains {
+        repeated ResourceDomain resource_domain = 1;
+    }
+
+    message Errors {
+        repeated Error error = 2;
+    }
+
+    message Error {
+        // Код ошибки
+        Code code = 1;
+
+        // Описание ошибки
+        string message = 2;
+
+        // Имя домена
+        string domain = 3;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+
+            // Домен не зарегистрирован
+            DOMAIN_NOT_REGISTERED = 2;
+
+            // У домена указаны NS сервера отличные от серверов Beget -
+            // ns1.beget.com
+            // ns2.beget.com
+            // ns1.beget.pro
+            // ns2.beget.pro
+            DOMAIN_INCORRECT_NS = 3;
+
+            // Домен не является доменом третьего уровня
+            NOT_SUBDOMAIN = 4;
+
+            // Домен не найден
+            DOMAIN_NOT_FOUND = 5;
+
+            // Домен используется другой Cdn
+            DOMAIN_ALREADY_USED = 6;
+
+            // Некорректный домен
+            DOMAIN_INVALID = 7;
+        }
+    }
+}
+
+message GetSourceDomainsRequest {
+}
+
+message GetSourceDomainsResponse {
+    repeated SourceDomain source_domain = 1;
+}
+
+message ChangeSettingRequest {
+    // Идентификатор CDN, в формате uuid v4
+    string service_id = 1;
+
+    Settings settings = 2;
+}
+
+message ChangeSettingResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о CDN
+        Cdn cdn = 1;
+
+        // Результат запроса: ошибка при изменении настроек CDN
+        Error error = 2;
+    }
+
+    message Error {
+        // Код ошибки
+        Code code = 1;
+
+        // Описание ошибки
+        string message = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+
+            INVALID_OPTION = 2;
+        }
+    }
+}
+
+message PurgeAllCacheRequest {
+    // Идентификатор CDN, в формате uuid v4
+    string service_id = 1;
+}
+
+message PurgeAllCacheResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о CDN
+        Cdn cdn = 1;
+
+        // Результат запроса: ошибка очистке кеша
+        Error error = 2;
+    }
+
+    message Error {
+        // Код ошибки
+        Code code = 1;
+
+        // Описание ошибки
+        string message = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+
+            // Много запросов на сброс кеша
+            // Допускается сброс кеша не чаще 1 раза в 5 минут
+            TOO_MANY_REQUESTS = 2;
+        }
+    }
+}
+
+message PurgeCacheByPathsRequest {
+    // Идентификатор CDN, в формате uuid v4
+    string service_id = 1;
+
+    // Список путей для очистки кеша
+    repeated string path = 2;
+}
+
+message PurgeCacheByPathsResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о CDN
+        Cdn cdn = 1;
+
+        // Результат запроса: ошибка при очистке кеша
+        Error error = 2;
+    }
+
+    message Error {
+        // Код ошибки
+        Code code = 1;
+
+        // Описание ошибки
+        string message = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+        }
+    }
+}
+
+message PreloadCacheByPathsRequest {
+    // Идентификатор CDN, в формате uuid v4
+    string service_id = 1;
+
+    // Список путей для загрузки в кеш
+    repeated string path = 2;
+}
+
+message PreloadCacheByPathsResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о CDN
+        Cdn cdn = 1;
+
+        // Результат запроса: ошибка при включении CDN
+        Error error = 2;
+    }
+
+    message Error {
+        // Код ошибки
+        Code code = 1;
+
+        // Описание ошибки
+        string message = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+        }
+    }
+}
+
+message CdnCreateParams {
+    // Домены для раздачи контента
+    repeated string resource_domain = 1;
+
+    // Информация о домене источнике контента
+    SourceDomain source_domain = 2;
+
+    // Настройки CDN
+    Settings settings = 3;
+
+    message Settings {
+    }
+
+}
+
+message CdnCreateError {
+    Error error = 1;
+
+    repeated DomainError domain_error = 2;
+
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Недостаточно средств для создания сервиса
+            INSUFFICIENT_FUNDS = 1;
+
+            // Неизвестная конфигурация
+            CONFIGURATION_NOT_FOUND = 2;
+
+            // Некорректное название сервиса
+            INVALID_DISPLAY_NAME = 4;
+
+            // CDN с таким именем уже существует
+            CDN_NAME_ALREADY_EXISTS = 8;
+
+            // Некорректное уникальное имя CDN
+            INVALID_CDN_NAME = 9;
+
+            // Доменов для раздачи контента передано больше допустимого
+            DOMAIN_LIMIT = 10;
+
+            // Некорректное описание CDN
+            INVALID_DESCRIPTION = 11;
+
+            INTERNAL_ERROR = 12;
+        }
+
+    }
+
+    message DomainError {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        string domain = 3;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+
+            // Домен не зарегистрирован
+            DOMAIN_NOT_REGISTERED = 2;
+
+            // У домена указаны NS сервера отличные от серверов Beget -
+            // ns1.beget.com
+            // ns2.beget.com
+            // ns1.beget.pro
+            // ns2.beget.pro
+            DOMAIN_INCORRECT_NS = 3;
+
+            // Домен не является доменом третьего уровня
+            NOT_SUBDOMAIN = 4;
+
+            // Домен не найден
+            DOMAIN_NOT_FOUND = 5;
+
+            // Домен используется другой Cdn
+            DOMAIN_ALREADY_USED = 6;
+
+            // Некорректный домен
+            DOMAIN_INVALID = 7;
+        }
+    }
+}
+
+message Cdn {
+    repeated ResourceDomain resource_domain = 2;
+
+    SourceDomain source_domain = 3;
+
+    Settings settings = 4;
+}
+
+message ResourceDomain {
+    string domain = 1;
+
+    bool is_technical = 3;
+
+    Status status = 2;
+
+    enum Status {
+        _ = 0;
+        CONFIGURING = 1;
+        WORKING = 2;
+    }
+}
+
+message SourceDomain {
+    // Идентификатор CDN, в формате uuid v4
+    string cdn_service_id = 1;
+
+    // Идентификатор сервис, которому принадлежит домен(S3/VPS), в формате uuid v4
+    string source_service_id = 2;
+
+    // Тип сервиса
+    SourceServiceType source_service_type = 3;
+
+    // Имя домена
+    string domain = 4;
+
+    enum SourceServiceType {
+        DOMAIN = 0;
+        S3 = 1;
+        VPS = 2;
+    }
+}
+
+message Settings {
+    // Время кеширования на CDN в секундах
+    uint32 caching_time = 1;
+
+    // Следовать ли редиректу источника при получении контента
+    FollowOriginRedirect follow_origin_redirect = 2;
+
+    // Кеширование в браузере
+    CachingTimeBrowser caching_time_browser = 3;
+
+    // Игнорировать Set-Cookie
+    bool ignore_cookie = 4;
+
+    // Игнорировать параметры запроса
+    bool ignore_query_string = 5;
+
+    // Параметр управляет доступом к контенту при недоступности источника(сетевые проблемы/50x/etc)
+    // будет использоваться контент из кеша CDN, даже если время жизни кеша истекло
+    Stale stale = 6;
+
+    // Параметр управляет доступом к контенту из указанных стран и их регионов
+    GeoAcl geo_acl = 7;
+
+    // Параметры контролирует доступ к контенту с указанных доменных имён
+    RefererAcl referer_acl = 8;
+
+    // Параметры политики доступа по IP-адресам
+    IpAddressAcl ip_address_acl = 9;
+
+    // Редирект с HTTP на HTTPS
+    bool redirect_http_to_https = 10;
+
+    // Параметры политики доступа по User-Agent
+    UserAgentAcl user_agent_acl = 11;
+
+    // Параметр настраивает доступ к контенту с токенизированными URL-адресами, сгенерированными с помощью алгоритма MD5
+    TokenizedUrlSecureKey tokenized_url_secure_key = 12;
+
+    // Параметр задаёт список разрешённых HTTP-методов для контента CDN
+    AllowedHttpMethods allowed_http_methods = 13;
+
+    // Включить HTTP/3 для доставки контента
+    bool http3_enabled = 14;
+
+    // Сжатие контента с помощью GZIP
+    GzipCompression gzip_compression = 15;
+
+    // Оптимизация доставки больших файлов.
+    // При включении файлы запрашиваются и кэшируются блоками по 10 МБ.
+    // Этот параметр сокращает время до получения первого байта.
+    // Источник должен поддерживать запросы HTTP Range.
+    bool content_slice = 16;
+
+    // Параметр позволяет CDN добавлять заголовки HTTP-запросов при отправке запросов к источнику
+    StaticRequestHeaders static_request_headers = 17;
+
+    // Параметр добавляет заголовок Access-Control-Allow-Origin к ответам от серверов CDN
+    Cors cors = 18;
+
+    // Параметр позволяет CDN добавлять пользовательские заголовки HTTP к ответам для конечных пользователей
+    StaticResponseHeader static_response_headers = 19;
+
+    // Параметр определяет HTTP-заголовки, указанные в источнике, которые CDN-сервер скрывает в ответе
+    ResponseHeadersHidingPolicy response_headers_hiding_policy = 20;
+
+    message FollowOriginRedirect {
+        // Включить следование по редиректам источника
+        bool enable = 1;
+
+        // Список конкретных кодов редиректов HTTP
+        // при пустом списке будет следовать по всем кодам редиректов HTTP
+        repeated uint32 http_code = 2;
+    }
+
+    message CachingTimeBrowser {
+        // Если выключено - будет использоваться время кеширование полученное от источника
+        bool enable = 1;
+
+        // Время кеширования в секундах
+        uint32 time = 2;
+    }
+
+    message Stale {
+        bool enable = 1;
+        repeated Type type = 2;
+        enum Type {
+            HTTP_403 = 0;
+            HTTP_404 = 1;
+            HTTP_429 = 2;
+            HTTP_500 = 3;
+            HTTP_502 = 4;
+            HTTP_503 = 5;
+            HTTP_504 = 6;
+            INVALID_HEADER = 7;
+            TIMEOUT = 8;
+            CACHE_UPDATING = 9;
+        }
+    }
+
+    message GeoAcl {
+        bool enable = 1;
+        PolicyType policy_type = 2;
+
+        enum PolicyType {
+            ALLOW = 0;
+            DENY = 1;
+        }
+
+        // Список конкретных стран и регионов, например "RU": ["АD", "AMU"]
+        map<string, StringArray> excepted_values = 3;
+
+        message StringArray {
+              repeated string values = 1;
+        }
+    }
+
+    message RefererAcl {
+        bool enable = 1;
+        PolicyType policy_type = 2;
+        repeated string excepted_domain = 3;
+
+        enum PolicyType {
+            ALLOW = 0;
+            DENY = 1;
+        }
+    }
+
+    message IpAddressAcl {
+        bool enable = 1;
+        PolicyType policy_type = 2;
+        repeated string excepted_ip = 3;
+
+        enum PolicyType {
+            ALLOW = 0;
+            DENY = 1;
+        }
+    }
+
+    message UserAgentAcl {
+        bool enable = 1;
+        PolicyType policy_type = 2;
+        repeated string excepted_user_agent = 3;
+
+        enum PolicyType {
+            ALLOW = 0;
+            DENY = 1;
+        }
+    }
+
+    message TokenizedUrlSecureKey {
+        bool enable = 1;
+
+        // Ключ для подписи URL
+        string key = 2;
+
+        // Включить IP-адрес конечного пользователя в генерацию защищенного токена
+        bool include_ip = 3;
+    }
+
+    message AllowedHttpMethods {
+        // При enable=false доступны все HTTP методы
+        bool enable = 1;
+        repeated HttpMethod http_method = 2;
+
+        enum HttpMethod {
+            GET = 0;
+            HEAD = 1;
+            POST = 2;
+            PUT = 3;
+            PATCH = 4;
+            DELETE = 5;
+            OPTIONS = 6;
+        }
+    }
+
+    message GzipCompression {
+        bool enable = 1;
+        repeated string content_type = 2;
+        // Список доступных content_type
+        //
+        // application/javascript
+        // application/json
+        // application/vnd.ms-fontobject
+        // application/x-font-ttf
+        // application/x-javascript
+        // application/xml
+        // application/xml+rss
+        // image/svg+xml
+        // text/css
+        // text/html - mandatory value
+        // text/javascript
+        // text/plain
+        // text/xml
+        // application/dash+xml
+        // application/vnd.apple.mpegurl
+        // application/vnd.ms-sstr+xml
+        // application/wasm
+        // application/x-mpegURL
+        // application/x-font-opentype
+        // text/vtt
+        // application/x-subrip
+        // font/woff
+        // font/woff2
+    }
+
+    message StaticRequestHeaders {
+        bool enabled = 1;
+
+        // Массив HTTP заголовок - значение
+        //
+        // Можно указать до 50 заголовков HTTP-запроса.
+        // Имя заголовка ограничено 255 символами и может содержать латинские буквы (A-Z, a-z), цифры (0-9), дефисы и подчеркивания.
+        // Значение заголовка ограничено 512 символами и должно начинаться с латинской буквы (A-z, a-z), цифры (0-9), звёздочки (*) или фигурной скобки ({).
+        // Может содержать только символы ASCII от 32 до 126, за исключением обратной косой черты (\), символа доллара ($) и одинарных кавычек (')
+        map<string, string> value = 2;
+    }
+
+    message Cors {
+        bool enabled = 1;
+
+        repeated string value = 2;
+
+        // true — добавлять заголовок Access-Control-Allow-Origin в ответ независимо от кода состояния HTTP-ответа.
+        // false — добавлять заголовок Access-Control-Allow-Origin только в ответы с кодами состояния HTTP: 200, 201, 204, 206, 301, 302, 303, 304, 307 или 308.
+        bool always = 3;
+    }
+
+    message StaticResponseHeader {
+        bool enable = 1;
+        repeated Header header = 2;
+
+        message Header {
+            // Имя заголовка
+            string name = 1;
+
+            // Список значений заголовка
+            repeated string value = 2;
+
+            // true — добавлять заголовок Access-Control-Allow-Origin в ответ независимо от кода состояния HTTP-ответа.
+            // false — добавлять заголовок Access-Control-Allow-Origin только в ответы с кодами состояния HTTP: 200, 201, 204, 206, 301, 302, 303, 304, 307 или 308.
+            bool always = 3;
+        }
+    }
+
+    message ResponseHeadersHidingPolicy {
+        bool enabled = 1;
+        repeated string excepted = 2;
+        Mode mode = 3;
+
+        enum Mode {
+            // Cкрыть все HTTP-заголовки из ответа, кроме перечисленных в поле exceptioned
+            HIDE = 0;
+            // Cкрыть HTTP-заголовки, перечисленные в поле exceptioned, из ответа
+            SHOW = 1;
+        }
+    }
+}

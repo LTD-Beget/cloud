@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "cloud/proto/v1/mysql.proto";
 import "cloud/proto/v1/postgresql.proto";
 import "cloud/proto/v1/s3.proto";
+import "cloud/proto/v1/cdn.proto";
 
 // do not use structures.proto here for avoid recursive import
 
@@ -130,6 +131,8 @@ message CreateRequest {
         postgresql.PgCreateParams postgresql_params = 7;
         // Дополнительные параметры создаваемого сервиса: S3 хранилище
         s3.S3CreateParams s3_params = 8;
+        // Дополнительные параметры создаваемого сервиса: CDN
+        cdn.CdnCreateParams cdn_params = 9;
     }
 
     // Зарезервированное поле, должно быть пустым
@@ -153,6 +156,9 @@ message CreateResponse {
 
         // Результат запроса: ошибка при создании S3
         s3.S3CreateError s3_error = 4;
+
+        // Результат запроса: ошибка при создании CDN
+        cdn.CdnCreateError cdn_error = 5;
     }
 }
 
@@ -320,6 +326,11 @@ message Service {
 
         // Информация о конкретном сервисе: хранилище S3
         s3.S3 s3 = 19;
+
+        // Информация о конкретном сервисе: CDN
+        cdn.Cdn cdn = 24;
+
+
     }
 
     // Заблокирован ли сервис
@@ -352,8 +363,9 @@ message Service {
         MYSQL84 = 6;
         POSTGRESQL14 = 2;
         POSTGRESQL15 = 3;
-        S_3 = 4;
         POSTGRESQL164 = 5;
+        S_3 = 4;
+        CDN = 7;
     }
 
     enum Status {
@@ -371,6 +383,16 @@ message Service {
 
         // Смена конфигурации
         RECONFIGURING = 4;
+
+        // Работа сервиса временно приостановлена
+        SUSPENDED = 5;
+    }
+
+    enum StatusDetails {
+        _ = 0;
+
+        // Работа сервиса приостановлена из за нехватки средств
+        SUSPENDED_INSUFFICIENT_FUNDS = 1;
     }
 }
 
@@ -421,5 +443,6 @@ message ServiceConfiguration {
         POSTGRESQL15 = 3;
         S_3 = 4;
         POSTGRESQL164 = 5;
+        CDN = 7;
     }
 }
