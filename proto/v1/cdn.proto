@@ -509,7 +509,14 @@ message Settings {
 
         // Список конкретных кодов редиректов HTTP
         // при пустом списке будет следовать по всем кодам редиректов HTTP
-        repeated uint32 http_code = 2;
+        repeated Code code = 2;
+        enum Code {
+            HTTP_301 = 0;
+            HTTP_302 = 1;
+            HTTP_303 = 2;
+            HTTP_307 = 3;
+            HTTP_308 = 4;
+        }
     }
 
     message CachingTimeBrowser {
