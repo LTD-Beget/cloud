@@ -1,0 +1,256 @@
+syntax = 'proto3';
+
+package beget.cloud.v1.project;
+
+import "google/api/annotations.proto";
+
+// Управление проектами
+//
+// Предоставляет набор методов для работы с проектами: создание, получение списка,
+// изменение параметров и удаление проектов. Поддерживает концепцию проекта по умолчанию.
+service ProjectService {
+    // Получить список проектов
+    //
+    // Возвращает список проектов пользователя с поддержкой пагинации, фильтрации и сортировки.
+    // Поддерживает параметры offset и limit для пагинации, а также фильтры по основным полям.
+    rpc getList (GetProjectListRequest) returns (GetProjectListResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloud/projects"
+        };
+    }
+
+    // Создать проект
+    //
+    // Создает новый проект. Если у пользователя нету проекта по умолчанию, то
+    // новый проект будет создан как проект по умолчанию.
+    rpc create (CreateProjectRequest) returns (CreateProjectResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloud/projects",
+            body: "*"
+        };
+    }
+
+    // Изменить параметры проекта
+    //
+    // Изменяет параметры проекта (название и описание). Поле is_default изменяться не может.
+    // Для получения доступных идентификаторов проектов `project_id` необходимо использовать метод
+    // "Получить список проектов" из API "Управление проектами".
+    rpc update (UpdateProjectRequest) returns (UpdateProjectResponse) {
+        option (google.api.http) = {
+            put: "/v1/cloud/projects/{project_id}",
+            body: "*"
+        };
+    }
+
+    // Удалить проект
+    //
+    // Удаляет проект по его идентификатору. Проект по умолчанию удалить нельзя.
+    // Удаление выполняется только при условии отсутствия нарушений целостности.
+    // Для получения доступных идентификаторов проектов `project_id` необходимо использовать метод
+    // "Получить список проектов" из API "Управление проектами".
+    rpc remove (RemoveProjectRequest) returns (RemoveProjectResponse) {
+        option (google.api.http) = {
+            delete: "/v1/cloud/projects/{project_id}"
+        };
+    }
+}
+
+message GetProjectListRequest {
+    // Смещение для пагинации (необязательное поле)
+    uint32 offset = 1;
+
+    // Лимит записей для пагинации (необязательное поле)
+    uint32 limit = 2;
+
+    // Фильтрация по полям: repeated string — каждое значение имеет вид "<field_name>=<value>",
+    // где <field_name> поле для фильтрации, <value> требуемое значение поля.
+    //
+    // Тип данных для фильтра - должен быть таким же как и тип данных у поля.
+    //
+    // Правила фильтрации:
+    //  - Несколько фильтров применяется через логическое И.
+    //  - Для string  - поиск по подстроке (LIKE %value%).
+    //  - Для boolean - строковые литералы "true"|"false".
+    //  - остальные типы данных проверяются на полное соответствие.
+    //
+    // Пример: ["status=ACTIVE", "is_default=true"]
+    repeated string filter = 3;
+}
+
+message GetProjectListResponse {
+    // Список проектов
+    repeated Project projects = 1;
+
+    // Общее количество доступных проектов
+    uint32 total_count = 2;
+}
+
+message CreateProjectRequest {
+    // Название проекта
+    string name = 1;
+
+    // Описание проекта (необязательное поле)
+    string description = 2;
+}
+
+message CreateProjectResponse {
+    // Результат запроса
+    oneof result {
+        // Информация о созданном проекте
+        Project project = 1;
+
+        // Ошибка при создании проекта
+        CreateProjectError error = 2;
+    }
+}
+
+message CreateProjectError {
+    // Описание ошибки
+    string message = 1;
+
+    // Код ошибки
+    Code code = 2;
+
+    enum Code {
+        // Зарезервированный код ошибки
+        _ = 0;
+
+        // Невалидное название проекта
+        INVALID_PROJECT_NAME = 1;
+
+        // Невалидное описание проекта
+        INVALID_PROJECT_DESCRIPTION = 2;
+
+        // Превышен лимит проектов для пользователя
+        PROJECT_LIMIT_EXCEEDED = 3;
+    }
+}
+
+message UpdateProjectRequest {
+    // Идентификатор проекта в формате UUID
+    string project_id = 1;
+
+    // Новое название проекта (необязательное поле)
+    string name = 2;
+
+    // Новое описание проекта (необязательное поле)
+    string description = 3;
+}
+
+message UpdateProjectResponse {
+    // Результат запроса
+    oneof result {
+        // Информация об обновлённом проекте
+        Project project = 1;
+
+        // Ошибка при обновлении проекта
+        UpdateProjectError error = 2;
+    }
+}
+
+message UpdateProjectError {
+    // Описание ошибки
+    string message = 1;
+
+    // Код ошибки
+    Code code = 2;
+
+    enum Code {
+        // Зарезервированный код ошибки
+        _ = 0;
+
+        // Проект не найден
+        PROJECT_NOT_FOUND = 1;
+
+        // Невалидное название проекта
+        INVALID_PROJECT_NAME = 2;
+
+        // Невалидное описание проекта
+        INVALID_PROJECT_DESCRIPTION = 3;
+
+        // Отсутствует доступ к проекту
+        ACCESS_DENIED = 4;
+    }
+}
+
+message RemoveProjectRequest {
+    // Идентификатор проекта в формате UUID
+    string project_id = 1;
+}
+
+message RemoveProjectResponse {
+    // Результат запроса
+    oneof result {
+        // Успешное удаление проекта
+        Success success = 1;
+
+        // Ошибка при удалении проекта
+        RemoveProjectError error = 2;
+    }
+
+    message Success {}
+}
+
+message RemoveProjectError {
+    // Описание ошибки
+    string message = 1;
+
+    // Код ошибки
+    Code code = 2;
+
+    enum Code {
+        // Зарезервированный код ошибки
+        _ = 0;
+
+        // Проект не найден
+        PROJECT_NOT_FOUND = 1;
+
+        // Нельзя удалить проект по умолчанию
+        CANNOT_DELETE_DEFAULT_PROJECT = 2;
+
+        // Проект содержит активные ресурсы
+        PROJECT_HAS_ACTIVE_RESOURCES = 3;
+
+        // Отсутствует доступ к проекту
+        ACCESS_DENIED = 4;
+    }
+}
+
+// Информация о проекте
+message Project {
+    // Уникальный идентификатор проекта в формате UUID
+    string id = 1;
+
+    // Название проекта
+    string name = 2;
+
+    // Описание проекта
+    string description = 3;
+
+    // Идентификатор владельца (аккаунт или организация)
+    uint32 customer_id = 4;
+
+    // Признак проекта по умолчанию
+    bool is_default = 5;
+
+    // Статус проекта
+    Status status = 6;
+
+    // Дата создания проекта в формате RFC3339
+    string created_at = 7;
+
+    // Дата последнего обновления в формате RFC3339
+    string updated_at = 8;
+
+    // Статусы проекта
+    enum Status {
+        // Активен
+        ACTIVE = 0;
+
+        // Архивирован
+        ARCHIVED = 1;
+
+        // Ожидает удаления
+        PENDING_DELETE = 2;
+    }
+}
