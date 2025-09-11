@@ -221,9 +221,6 @@ message Project {
     // Описание проекта
     string description = 3;
 
-    // Идентификатор владельца (аккаунт или организация)
-    uint32 customer_id = 4;
-
     // Признак проекта по умолчанию
     bool is_default = 5;
 
