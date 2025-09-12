@@ -15,7 +15,7 @@ service ProjectService {
     // Поддерживает параметры offset и limit для пагинации, а также фильтры по основным полям.
     rpc getList (GetProjectListRequest) returns (GetProjectListResponse) {
         option (google.api.http) = {
-            get: "/v1/cloud/projects/list"
+            get: "/v1/cloud/projects"
         };
     }
 
