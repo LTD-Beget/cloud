@@ -226,24 +226,9 @@ message Project {
     // Признак проекта по умолчанию
     bool is_default = 5;
 
-    // Статус проекта
-    Status status = 6;
-
     // Дата создания проекта в формате RFC3339
     string created_at = 7;
 
     // Дата последнего обновления в формате RFC3339
     string updated_at = 8;
-
-    // Статусы проекта
-    enum Status {
-        // Активен
-        ACTIVE = 0;
-
-        // Архивирован
-        ARCHIVED = 1;
-
-        // Ожидает удаления
-        PENDING_DELETE = 2;
-    }
 }
