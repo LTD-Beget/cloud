@@ -71,7 +71,7 @@ message GetProjectListRequest {
     //  - Для boolean - строковые литералы "true"|"false".
     //  - Для string  - поиск по подстроке или полному соответствию в зависимости от оператора.
     //
-    // Пример: ["id=12345", "name:test", "status=ACTIVE", "is_active=true"]
+    // Пример: ["id=12345", "name:test", "is_active=true"]
     //
     // Поддерживаемые операторы: ["=", ":"].
     // Поддерживаемые поля для фильтрации: ["name", "description", "is_default"].
