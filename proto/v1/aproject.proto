@@ -79,11 +79,37 @@ message GetProjectListRequest {
 }
 
 message GetProjectListResponse {
-    // Список проектов
-    repeated Project projects = 1;
+    oneof result {
+        // Пагинированный список проектов
+        ProjectPagination pagination = 1;
 
-    // Общее количество доступных проектов
-    uint32 total_count = 2;
+        // Ошибка при получении списка проектов
+        GetProjectListError error = 2;
+    }
+
+    message ProjectPagination {
+        // Список проектов
+        repeated Project projects = 1;
+
+        // Общее количество доступных проектов
+        uint32 total_count = 2;
+    }
+}
+
+message GetProjectListError {
+    // Описание ошибки
+    string message = 1;
+
+    // Код ошибки
+    Code code = 2;
+
+    enum Code {
+        // Зарезервированный код ошибки
+        _ = 0;
+
+        // Невалидный запрос на фильтрацию.
+        INVALID_REQUEST = 1;
+    }
 }
 
 message CreateProjectRequest {
@@ -121,7 +147,6 @@ message CreateProjectError {
 
         // Невалидное описание проекта
         INVALID_PROJECT_DESCRIPTION = 2;
-
     }
 }
 
