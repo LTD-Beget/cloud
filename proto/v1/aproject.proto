@@ -80,15 +80,15 @@ message GetProjectListRequest {
 
 message GetProjectListResponse {
     oneof result {
-        // Пагинированный список проектов
-        ProjectPagination pagination = 1;
+        // Страница проектов с пагинацией
+        ProjectPage page = 1;
 
         // Ошибка при получении списка проектов
         GetProjectListError error = 2;
     }
 
-    message ProjectPagination {
-        // Список проектов
+    message ProjectPage {
+        // Список проектов на текущей странице
         repeated Project projects = 1;
 
         // Общее количество доступных проектов
