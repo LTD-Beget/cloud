@@ -15,7 +15,7 @@ service ProjectService {
     // Поддерживает параметры offset и limit для пагинации, а также фильтры по основным полям.
     rpc getList (GetProjectListRequest) returns (GetProjectListResponse) {
         option (google.api.http) = {
-            get: "/v1/cloud/projects"
+            get: "/v1/cloud/projects/list"
         };
     }
 
@@ -84,7 +84,7 @@ message GetProjectListResponse {
         ProjectPage page = 1;
 
         // Ошибка при получении списка проектов
-        GetProjectListError error = 2;
+        Error error = 2;
     }
 
     message ProjectPage {
@@ -94,23 +94,25 @@ message GetProjectListResponse {
         // Общее количество доступных проектов
         uint32 total_count = 2;
     }
-}
 
-message GetProjectListError {
-    // Описание ошибки
-    string message = 1;
+    message Error {
+        // Описание ошибки
+        string message = 1;
 
-    // Код ошибки
-    Code code = 2;
+        // Код ошибки
+        Code code = 2;
 
-    enum Code {
-        // Зарезервированный код ошибки
-        _ = 0;
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
 
-        // Невалидный запрос на фильтрацию.
-        INVALID_REQUEST = 1;
+            // Неверный запрос
+            INVALID_REQUEST = 1;
+        }
     }
 }
+
+
 
 message CreateProjectRequest {
     // Название проекта
@@ -127,26 +129,26 @@ message CreateProjectResponse {
         Project project = 1;
 
         // Ошибка при создании проекта
-        CreateProjectError error = 2;
+        Error error = 2;
     }
-}
 
-message CreateProjectError {
-    // Описание ошибки
-    string message = 1;
+    message Error {
+        // Описание ошибки
+        string message = 1;
 
-    // Код ошибки
-    Code code = 2;
+        // Код ошибки
+        Code code = 2;
 
-    enum Code {
-        // Зарезервированный код ошибки
-        _ = 0;
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
 
-        // Невалидное название проекта
-        INVALID_PROJECT_NAME = 1;
+            // Невалидное название проекта
+            INVALID_PROJECT_NAME = 1;
 
-        // Невалидное описание проекта
-        INVALID_PROJECT_DESCRIPTION = 2;
+            // Невалидное описание проекта
+            INVALID_PROJECT_DESCRIPTION = 2;
+        }
     }
 }
 
@@ -168,29 +170,29 @@ message UpdateProjectResponse {
         Project project = 1;
 
         // Ошибка при обновлении проекта
-        UpdateProjectError error = 2;
+        Error error = 2;
     }
-}
 
-message UpdateProjectError {
-    // Описание ошибки
-    string message = 1;
+    message Error {
+        // Описание ошибки
+        string message = 1;
 
-    // Код ошибки
-    Code code = 2;
+        // Код ошибки
+        Code code = 2;
 
-    enum Code {
-        // Зарезервированный код ошибки
-        _ = 0;
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
 
-        // Проект не найден
-        PROJECT_NOT_FOUND = 1;
+            // Проект не найден
+            PROJECT_NOT_FOUND = 1;
 
-        // Невалидное название проекта
-        INVALID_PROJECT_NAME = 2;
+            // Невалидное название проекта
+            INVALID_PROJECT_NAME = 2;
 
-        // Невалидное описание проекта
-        INVALID_PROJECT_DESCRIPTION = 3;
+            // Невалидное описание проекта
+            INVALID_PROJECT_DESCRIPTION = 3;
+        }
     }
 }
 
@@ -206,34 +208,34 @@ message RemoveProjectResponse {
         Success success = 1;
 
         // Ошибка при удалении проекта
-        RemoveProjectError error = 2;
+        Error error = 2;
     }
 
     message Success {}
-}
 
-message RemoveProjectError {
-    // Описание ошибки
-    string message = 1;
+    message Error {
+        // Описание ошибки
+        string message = 1;
 
-    // Код ошибки
-    Code code = 2;
+        // Код ошибки
+        Code code = 2;
 
-    enum Code {
-        // Зарезервированный код ошибки
-        _ = 0;
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
 
-        // Проект не найден
-        PROJECT_NOT_FOUND = 1;
+            // Проект не найден
+            PROJECT_NOT_FOUND = 1;
 
-        // Нельзя удалить проект по умолчанию
-        CANNOT_DELETE_DEFAULT_PROJECT = 2;
+            // Нельзя удалить проект по умолчанию
+            CANNOT_DELETE_DEFAULT_PROJECT = 2;
 
-        // Проект содержит активные ресурсы
-        PROJECT_HAS_ACTIVE_RESOURCES = 3;
+            // Проект содержит активные ресурсы
+            PROJECT_HAS_ACTIVE_RESOURCES = 3;
 
-        // Отсутствует доступ к проекту
-        ACCESS_DENIED = 4;
+            // Отсутствует доступ к проекту
+            ACCESS_DENIED = 4;
+        }
     }
 }
 
