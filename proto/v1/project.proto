@@ -235,6 +235,9 @@ message RemoveProjectResponse {
 
             // Отсутствует доступ к проекту
             ACCESS_DENIED = 4;
+
+            // Проект невозможно удалить в текущем состоянии
+            CANNOT_DELETE_PROJECT_IN_CURRENT_STATE = 5;
         }
     }
 }
