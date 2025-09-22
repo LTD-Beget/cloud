@@ -392,6 +392,9 @@ message CdnCreateError {
 
             // Некорректный домен
             DOMAIN_INVALID = 7;
+
+            // Не удалось получить А запись домена
+            DOMAIN_NOT_RESOLVED = 8;
         }
     }
 }

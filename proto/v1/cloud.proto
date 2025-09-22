@@ -295,6 +295,9 @@ message Service {
     // Статус сервиса
     Status status = 5;
 
+    // Детализация статуса
+    StatusDetails status_details = 25;
+
     // Дата создания сервиса в формате W3C
     string created_at = 6;
 
