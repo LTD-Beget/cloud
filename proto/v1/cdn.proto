@@ -80,6 +80,15 @@ service CdnService {
             body: "*"
         };
     }
+
+    // Узнать тарификацию CDN
+    //
+    // Возвращает стоимость услуги в день и количество использованого трафика.
+    rpc getPrice(GetPriceRequest) returns (GetPriceResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloud/cdn/price",
+        };
+    }
 }
 
 message ChangeResourceDomainsRequest {
@@ -296,6 +305,33 @@ message PreloadCacheByPathsResponse {
             INTERNAL_ERROR = 1;
         }
     }
+}
+
+message GetPriceRequest {
+}
+
+message GetPriceResponse {
+    repeated Cdn cdn = 1;
+
+    message Cdn {
+        // Идентификатор CDN, в формате uuid v4
+        string cdn_service_id = 1;
+
+        // Название CDN
+        string display_name = 2;
+
+        // Дата создания в формате W3C
+        string created_at = 3;
+
+        // Использование трафика за день в Мб
+        uint32 traffic_amount = 4;
+
+        // Стоимость использованного трафика за день
+        double traffic_rate = 5;
+    }
+
+    // Сумма недостатка средств на балансе для оплаты использованного трафика и разблокировки CDN
+    double required_topup_amount = 2;
 }
 
 message CdnCreateParams {
