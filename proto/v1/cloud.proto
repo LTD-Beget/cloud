@@ -173,11 +173,72 @@ message GetResponse {
 }
 
 message GetListRequest {
+    // Смещение, по умолчанию 0
+    int32 offset = 1;
+
+    // Количество элементов, от 1 до 9999, по умолчанию 9999
+    int32 limit = 2;
+
+    // Сортировка по полям:
+    // Каждый элемент массива задает одно условие сортировки в формате `<field> <direction>` или `<field>`, где:
+    // 1. `<field>` — имя поля сортировки.
+    // 2. `<direction>` — направление сортировки: asc (по возрастанию) или desc (по убыванию).
+    // Если <direction> не указано — используется asc.
+    //
+    // Порядок сортировки соответствует порядку элементов в массиве.
+    //
+    // Примеры: ["status desc", "display_name"], ["created_at"]
+    repeated string sort = 3;
+
+    // Фильтрация по полям:
+    // Каждый элемент массива представляет отдельное условие фильтрации в формате `<field>=<value>`, где:
+    // 1. `<field>` — имя поля для фильтрации.
+    // 2. `<value>` — значение для сравнения.
+    //
+    // Правила фильтрации:
+    //  - Все условия применяются через логическое И.
+    //  - Для boolean используются строковые литералы "true" | "false".
+    //
+    // Примеры: ["status=RUNNING"], ["status=RUNNING", "ui_pinned=true"]
+    repeated string filter = 4;
 }
 
 message GetListResponse {
-    // Информация о сервисах
-    repeated Service service = 1;
+    // Информация о сервисах. Для сохранения обратной совместимости со старыми клиентами,
+    // которые не используют offset, limit, sort и filter в запросе
+    repeated Service service = 1 [deprecated = true];
+
+    oneof result {
+        // Страница сервисов с учетом пагинации, сортировки и фильтров
+        ServicePage page = 2;
+
+        // Ошибка при получении списка сервисов
+        Error error = 3;
+    }
+
+    message ServicePage {
+        // Список сервисов на текущей странице
+        repeated Service services = 1;
+
+        // Общее количество сервисов, доступных по данным условиям
+        uint32 total_count = 2;
+    }
+
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Неверный запрос
+            INVALID_REQUEST = 1;
+        }
+    }
 }
 
 message UpdateRequest {
