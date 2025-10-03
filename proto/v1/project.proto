@@ -95,21 +95,7 @@ message GetProjectListResponse {
         uint32 total_count = 2;
     }
 
-    message Error {
-        // Описание ошибки
-        string message = 1;
-
-        // Код ошибки
-        Code code = 2;
-
-        enum Code {
-            // Зарезервированный код ошибки
-            _ = 0;
-
-            // Неверный запрос
-            INVALID_REQUEST = 1;
-        }
-    }
+    message Error {}
 }
 
 
