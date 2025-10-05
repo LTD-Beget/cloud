@@ -201,6 +201,14 @@ message GetListRequest {
     //
     // Примеры: ["status=RUNNING"], ["status=RUNNING", "manage_enabled=true"]
     repeated string filter = 4;
+
+    // todo: comment
+    ViewMode view_mode = 5;
+
+    enum ViewMode {
+      FULL = 0;
+      BASIC = 1;
+    }
 }
 
 message GetListResponse {
