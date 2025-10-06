@@ -202,11 +202,13 @@ message GetListRequest {
     // Примеры: ["status=RUNNING"], ["status=RUNNING", "manage_enabled=true"]
     repeated string filter = 4;
 
-    // todo: comment
+    // Режим отображения, определяющий уровень детализации возвращаемых данных.
     ViewMode view_mode = 5;
 
     enum ViewMode {
+      // Возвращать все поля объектов (по умолчанию).
       FULL = 0;
+      // Возвращать только базовые (ключевые) поля для повышения производительности.
       BASIC = 1;
     }
 }
