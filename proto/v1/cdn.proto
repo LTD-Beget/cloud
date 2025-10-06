@@ -89,6 +89,59 @@ service CdnService {
             get: "/v1/cloud/cdn/price",
         };
     }
+
+    // Получить информация о странах
+    //
+    // Возвращает информация о странах из стандарта ISO-3166-1 (код/название)
+    rpc getIso3166Countries(GetCountriesRequest) returns (GetCountriesResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloud/cdn/iso3166-countries",
+        };
+    }
+
+    // Получить информацию о регионах страны
+    //
+    // Возвращает информацию о регионах страны из стандарта ISO-3166-2 (код/название)
+    rpc getIso3166Regions(GetRegionsRequest) returns (GetRegionsResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloud/cdn/iso3166-regions",
+            body: "*"
+        };
+    }
+}
+
+message GetCountriesRequest {
+}
+
+message GetCountriesResponse {
+    // Список стран
+    repeated Country country = 1;
+
+    message Country {
+        // Код страны
+        string code = 1;
+
+        // Название страны
+        string name = 2;
+    }
+}
+
+message GetRegionsRequest {
+    string country_code = 1;
+}
+
+message GetRegionsResponse {
+    string country_code = 1;
+
+    repeated Region region = 2;
+
+    message Region {
+        // Код региона
+        string code = 1;
+
+        // Название региона
+        string name = 2;
+    }
 }
 
 message ChangeResourceDomainsRequest {
@@ -383,6 +436,9 @@ message CdnCreateError {
             // Доменов для раздачи контента передано больше допустимого
             DOMAIN_LIMIT = 10;
 
+            // Некорректный IP адрес в качестве источника контента
+            SOURCE_INVALID_IP = 13;
+
             // Некорректное описание CDN
             INVALID_DESCRIPTION = 11;
 
@@ -562,8 +618,16 @@ message Settings {
         // Если выключено - будет использоваться время кеширование полученное от источника
         bool enable = 1;
 
+        // Режим кеширования, source - наследовать время с источника, custom - задать произвольное время
+        Type type = 3;
+
         // Время кеширования в секундах
         uint32 time = 2;
+
+        enum Type {
+            SOURCE = 0;
+            CUSTOM = 1;
+        }
     }
 
     message Stale {
