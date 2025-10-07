@@ -637,6 +637,9 @@ message CreateError {
 
         // Некорректные параметры конфигурации
         INVALID_CONFIG_PARAMS = 10;
+
+        // Проект не найден или недоступен
+        PROJECT_NOT_FOUND = 11;
     }
 }
 

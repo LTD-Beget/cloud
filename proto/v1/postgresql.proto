@@ -754,6 +754,9 @@ message PgCreateError {
 
         // Имя пользователя зарезервировано системой
         ROLE_NAME_IS_RESERVED = 13;
+
+        // Проект не найден или недоступен
+        PROJECT_NOT_FOUND = 14;
     }
 }
 
