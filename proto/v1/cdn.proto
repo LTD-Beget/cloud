@@ -500,6 +500,9 @@ message Cdn {
     SourceDomain source_domain = 3;
 
     Settings settings = 4;
+
+    // Количество трафика за месяц в MB
+    int64 traffic = 5;
 }
 
 message ResourceDomain {
