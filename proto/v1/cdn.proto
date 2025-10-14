@@ -529,18 +529,21 @@ message SourceDomain {
     // Тип сервиса
     SourceServiceType source_service_type = 3;
 
-    // Имя домена
+    // Имя домена или IP-адрес
     string domain = 4;
 
-    // Имя сервиса, которому принадлежит домен(S3/VPS)
+    // Имя сервиса (S3), которому принадлежит домен
     string source_service_display_name = 5;
 
-    // Имя сервиса, которому принадлежит домен(S3/VPS), для отображения в URL
+    // Имя сервиса (S3), которому принадлежит домен, для отображения в URL
     string source_service_slug = 6;
 
     enum SourceServiceType {
+        // Доменное имя
         DOMAIN = 0;
+        // S3 хранилище
         S3 = 1;
+        // IP-адрес VPS
         VPS = 2;
     }
 }
