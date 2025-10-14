@@ -103,6 +103,27 @@ service CloudService {
             body: "*"
         };
     }
+
+    // Закрепить/открепить сервис в интерфейсе
+    rpc changePinned(ChangePinnedRequest) returns (ChangePinnedResponse) {
+        option (google.api.http) = {
+            put: "/v1/cloud/{service_id}/pin"
+            body: "*"
+        };
+    }
+
+    // Прикрепить облачный сервис к проекту
+    //
+    // Прикрепляет облачный сервис к проекту
+    //
+    // Для получения доступных идентификаторов сервисов `service_id` необходимо использовать метод
+    // "Получить информацию о сервисах" из API "Управляемые сервисы".
+    rpc bindProject(BindProjectRequest) returns (BindProjectResponse) {
+        option (google.api.http) = {
+            put: "/v1/cloud/{service_id}/project"
+            body: "*"
+        };
+    }
 }
 
 message GetConfigurationListRequest {
@@ -140,6 +161,12 @@ message CreateRequest {
 
     // Регион, в котором будет создан сервис. По-умолчанию: ru1
     string region = 6;
+
+    // Идентификатор проекта в формате uuid v4. Если не указан, то сервис будет привязан к проекту по умолчанию
+    string project_id = 10;
+
+    // Отображение сервиса в интерфейсе как закреплённого
+    bool ui_pinned = 11;
 }
 
 message CreateResponse {
@@ -337,6 +364,82 @@ message ChangeConfigurationResponse {
     }
 }
 
+message BindProjectRequest {
+    // Идентификатор сервиса в формате uuid v4
+    string service_id = 1;
+
+    // Идентификатор проекта в формате uuid v4. Если не указан, то сервис будет привязан к проекту по умолчанию
+    string project_id = 2;
+}
+
+message BindProjectResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о сервисе
+        Service service = 1;
+
+        // Результат запроса: ошибка при прикреплении к проекту
+        Error error = 2;
+    }
+
+    message Error {
+        // Код ошибки
+        Code code = 1;
+
+        // Описание ошибки
+        string message = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 2;
+
+            // Проект не найден или недоступен
+            PROJECT_NOT_FOUND = 3;
+        }
+    }
+}
+
+message ChangePinnedRequest {
+    // Идентификатор сервиса в формате uuid v4
+    string service_id = 1;
+
+    // Отображение сервиса в интерфейсе как закреплённого
+    bool ui_pinned = 2;
+}
+
+message ChangePinnedResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о сервисе
+        Service service = 1;
+
+        // Результат запроса: ошибка при закреплении/откреплении сервиса
+        Error error = 2;
+    }
+
+    message Error {
+        // Код ошибки
+        Code code = 1;
+
+        // Сообщение об ошибке
+        string message = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка сервера
+            INTERNAL_ERROR = 1;
+        }
+    }
+}
+
 // Информация о сервисе
 message Service {
     // Идентификатор сервиса в формате uuid v4
@@ -350,6 +453,12 @@ message Service {
 
     // Описание сервиса
     string description = 4;
+
+    // Идентификатор проекта в формате uuid v4
+    string project_id = 26;
+
+    // Отображение сервиса в интерфейсе как закреплённого
+    bool ui_pinned = 27;
 
     // Статус сервиса
     Status status = 5;

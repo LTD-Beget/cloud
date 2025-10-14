@@ -443,6 +443,9 @@ message CdnCreateError {
             INVALID_DESCRIPTION = 11;
 
             INTERNAL_ERROR = 12;
+
+            // Проект не найден или недоступен
+            PROJECT_NOT_FOUND = 14;
         }
 
     }

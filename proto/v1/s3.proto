@@ -361,6 +361,9 @@ message S3CreateError {
 
         // Некорректное описание бакета
         INVALID_DESCRIPTION = 11;
+
+        // Проект не найден или недоступен
+        PROJECT_NOT_FOUND = 12;
     }
 }
 
