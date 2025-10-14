@@ -170,9 +170,6 @@ message UpdateProjectResponse {
             // Зарезервированный код ошибки
             _ = 0;
 
-            // Проект не найден
-            PROJECT_NOT_FOUND = 1;
-
             // Невалидное название проекта
             INVALID_PROJECT_NAME = 2;
 
@@ -209,9 +206,6 @@ message RemoveProjectResponse {
         enum Code {
             // Зарезервированный код ошибки
             _ = 0;
-
-            // Проект не найден
-            PROJECT_NOT_FOUND = 1;
 
             // Нельзя удалить проект по умолчанию
             CANNOT_DELETE_DEFAULT_PROJECT = 2;
