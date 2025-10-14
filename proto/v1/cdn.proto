@@ -529,6 +529,12 @@ message SourceDomain {
     // Имя домена
     string domain = 4;
 
+    // Имя сервиса, которому принадлежит домен(S3/VPS)
+    string source_service_display_name = 5;
+
+    // Имя сервиса, которому принадлежит домен(S3/VPS), для отображения в URL
+    string source_service_slug = 6;
+
     enum SourceServiceType {
         DOMAIN = 0;
         S3 = 1;
