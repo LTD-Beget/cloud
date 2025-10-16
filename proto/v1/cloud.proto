@@ -248,7 +248,7 @@ message GetListRequest {
     //   - project_id
     //   - cdn.source_domain.domain
     //   - cdn.resource_domain.domain
-    //   - s3.domain
+    //   - s3.fqdn
     //   - ip
     //
     // Поддерживаемые операторы сравнения:
