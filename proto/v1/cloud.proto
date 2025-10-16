@@ -208,13 +208,13 @@ message GetListRequest {
 
     // Сортировка по полям:
     // Значение — строка, где каждое условие сортировки задается в формате `<field> <direction>` или `<field>`, где:
-    //   <field> — имя поля сортировки (например, created_at, display_name, region.id).
+    //   <field> — имя поля сортировки.
     //   <direction> — направление сортировки: "asc" (по возрастанию) или "desc" (по убыванию).
     //                  Если не указано, используется "asc".
     // Несколько условий сортировки разделяются запятой, порядок сортировки соответсвует порядку в строке.
     // Примеры:
     //   "created_at"
-    //   "region.id, created_at desc"
+    //   "region, created_at desc"
     // Поддерживаемые поля для сортировки:
     //   - created_at
     //   - display_name
@@ -235,20 +235,20 @@ message GetListRequest {
     //   - OR  — объединяет условия, хотя бы одно из которых должно выполняться.
     //
     // Примеры:
-    //   display_name:"Test" AND (region.id="ru1" OR type="MYSQL8")
-    //   cdn_resource_name:"files." AND (description:"my project" OR ui_pinned=true)
+    //   display_name:"Test" AND (region="ru1" OR type="MYSQL8")
+    //   cdn.resource_domain.domain:"files." AND (description:"my project" OR ui_pinned=true)
     //
     // Поддерживаемые поля для фильтрации:
     //   - display_name
     //   - description
-    //   - region.id
+    //   - region
     //   - type
     //   - slug
     //   - ui_pinned
     //   - project_id
-    //   - cdn_source_name
-    //   - cdn_resource_name
-    //   - s3_domain
+    //   - cdn.source_domain.domain
+    //   - cdn.resource_domain.domain
+    //   - s3.domain
     //   - ip
     //
     // Поддерживаемые операторы сравнения:
