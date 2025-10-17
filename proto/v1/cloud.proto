@@ -219,7 +219,8 @@ message GetListRequest {
     //   - created_at
     //   - display_name
     //   - description
-    //   - region.id
+    //   - region
+    //   - ui_pin_changed_at
     string sort = 3;
 
 
@@ -246,6 +247,9 @@ message GetListRequest {
     //   - slug
     //   - ui_pinned
     //   - project_id
+    //   - postgresql14.host
+    //   - postgresql15.host
+    //   - postgresql164.host
     //   - cdn.source_domain.domain
     //   - cdn.resource_domain.domain
     //   - s3.fqdn
