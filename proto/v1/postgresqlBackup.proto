@@ -42,6 +42,7 @@ service PostgresqlBackupService {
 }
 
 message GetListRequest {
+    string filter = 1;
 }
 
 message GetListResponse {
