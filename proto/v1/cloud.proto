@@ -462,6 +462,9 @@ message Service {
     // Отображение сервиса в интерфейсе как закреплённого
     bool ui_pinned = 27;
 
+    // Дата последнего изменения значения поля ui_pinned в формате W3C
+    string ui_pin_changed_at = 28;
+
     // Статус сервиса
     Status status = 5;
 
