@@ -219,7 +219,8 @@ message GetListRequest {
     //   - created_at
     //   - display_name
     //   - description
-    //   - region.id
+    //   - region
+    //   - ui_pin_changed_at
     string sort = 3;
 
 
@@ -246,6 +247,9 @@ message GetListRequest {
     //   - slug
     //   - ui_pinned
     //   - project_id
+    //   - postgresql14.host
+    //   - postgresql15.host
+    //   - postgresql164.host
     //   - cdn.source_domain.domain
     //   - cdn.resource_domain.domain
     //   - s3.fqdn
@@ -461,6 +465,9 @@ message Service {
 
     // Отображение сервиса в интерфейсе как закреплённого
     bool ui_pinned = 27;
+
+    // Дата последнего изменения значения поля ui_pinned в формате W3C
+    string ui_pin_changed_at = 28;
 
     // Статус сервиса
     Status status = 5;
