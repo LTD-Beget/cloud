@@ -247,11 +247,13 @@ message GetListRequest {
     //   - slug
     //   - ui_pinned
     //   - project_id
+    //   - monitorable_resources
     //   - postgresql14.host
     //   - postgresql15.host
     //   - postgresql164.host
     //   - cdn.source_domain.domain
     //   - cdn.resource_domain.domain
+    //   - cdn.source_domain.source_service_display_name
     //   - s3.fqdn
     //   - ip
     //
