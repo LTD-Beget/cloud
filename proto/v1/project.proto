@@ -214,9 +214,6 @@ message RemoveProjectResponse {
 
             // Нельзя удалить проект по умолчанию
             CANNOT_DELETE_DEFAULT_PROJECT = 2;
-
-            // Проект содержит активные ресурсы
-            PROJECT_HAS_ACTIVE_RESOURCES = 3;
         }
     }
 }
