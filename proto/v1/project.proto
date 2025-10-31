@@ -16,7 +16,7 @@ service ProjectService {
     // **Фильтрация:**
     //
     // Формат фильтра описан в разделе "Фильтрация и сортировка" описания API.
-    // Пример: `name : "test" AND (region = "ru1" OR region = "ru2")`
+    // Пример: `name : "test" AND (description = "test-description" OR description : "sample")`
     //
     // Поддерживаемые поля для фильтрации: `name`, `description`, `is_default`
     rpc getList (GetProjectListRequest) returns (GetProjectListResponse) {
