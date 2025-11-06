@@ -55,6 +55,22 @@ service CloudService {
     //
     // Отдаёт информацию по всем управляемым сервисам на текущем аккаунте. Набор данных по каждому сервису совпадает
     // с данными, возвращаемыми методом "Получить информацию о сервисе" из API "Управляемые сервисы".
+    //
+    // **Фильтрация:**
+    //
+    // Формат фильтра описан в разделе "Фильтрация и сортировка" описания API.\
+    // Пример: `display_name : "test" AND (region = "ru1" OR region = "ru2")`
+    //
+    // Поддерживаемые поля для фильтрации: `id`, `display_name`, `description`, `type`, `slug`, `region`, `ui_pinned`,
+    // `project_id`, `ip`, `monitorable_resources`, `postgresql14.host`, `postgresql15.host`, `postgresql164.host`,
+    // `cdn.source_domain.domain`, `cdn.resource_domain.domain`, `cdn.source_domain.source_service_display_name`, `s3.fqdn`
+    //
+    // **Сортировка:**
+    //
+    // Формат сортировки описан в разделе "Фильтрация и сортировка" описания API.\
+    // Пример: `created_at desc`
+    //
+    // Поддерживаемые поля для сортировки: `created_at`, `display_name`, `description`, `region`, `ui_pin_changed_at`
     rpc getList(GetListRequest) returns (GetListResponse) {
         option (google.api.http) = {
             get: "/v1/cloud"
@@ -200,66 +216,16 @@ message GetResponse {
 }
 
 message GetListRequest {
-    // Смещение, по умолчанию 0
+    // Смещение для пагинации
     int32 offset = 1;
 
-    // Количество элементов, от 1 до 9999, по умолчанию 9999
+    // Лимит записей для пагинации (от 1 до 9999)
     int32 limit = 2;
 
-    // Сортировка по полям:
-    // Значение — строка, где каждое условие сортировки задается в формате `<field> <direction>` или `<field>`, где:
-    //   <field> — имя поля сортировки.
-    //   <direction> — направление сортировки: "asc" (по возрастанию) или "desc" (по убыванию).
-    //                  Если не указано, используется "asc".
-    // Несколько условий сортировки разделяются запятой, порядок сортировки соответсвует порядку в строке.
-    // Примеры:
-    //   "created_at"
-    //   "region, created_at desc"
-    // Поддерживаемые поля для сортировки:
-    //   - created_at
-    //   - display_name
-    //   - description
-    //   - region
-    //   - ui_pin_changed_at
+    // Сортировка списка облачных сервисов
     string sort = 3;
 
-
-    // Фильтрация по полям:
-    // Значение должно иметь вид:
-    //   "<field_name>=<value> AND (<field_name>=<value> OR <field_name>=<value>)"
-    // где:
-    //   <field_name> — имя поля для фильтрации.
-    //   <value> — требуемое значение поля.
-    //
-    // Логические операторы:
-    //   - AND — объединяет условия, все из которых должны выполняться.
-    //   - OR  — объединяет условия, хотя бы одно из которых должно выполняться.
-    //
-    // Примеры:
-    //   display_name:"Test" AND (region="ru1" OR type="MYSQL8")
-    //   cdn.resource_domain.domain:"files." AND (description:"my project" OR ui_pinned=true)
-    //
-    // Поддерживаемые поля для фильтрации:
-    //   - display_name
-    //   - description
-    //   - region
-    //   - type
-    //   - slug
-    //   - ui_pinned
-    //   - project_id
-    //   - monitorable_resources
-    //   - postgresql14.host
-    //   - postgresql15.host
-    //   - postgresql164.host
-    //   - cdn.source_domain.domain
-    //   - cdn.resource_domain.domain
-    //   - cdn.source_domain.source_service_display_name
-    //   - s3.fqdn
-    //   - ip
-    //
-    // Поддерживаемые операторы сравнения:
-    //   - "=" — полное соответствие
-    //   - ":" — поиск по подстроке
+    // Фильтр для выборки облачных сервисов
     string filter = 4;
 
     // Режим отображения, определяющий уровень детализации возвращаемых данных.
