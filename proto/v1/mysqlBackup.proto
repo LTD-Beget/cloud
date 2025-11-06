@@ -13,7 +13,14 @@ service MysqlBackupService {
     //
     // Отдаёт список доступных к восстановлению резервных копий. Информация о копии содержит данные о сервисе,
     // дату создания копии
-    rpc getList(GetListRequest) returns (GetListResponse) {
+    //
+    // **Фильтрация:**
+    //
+    // Формат фильтра описан в разделе "Фильтрация и сортировка" описания API.\
+    // Пример: `name = "fe190419-e16d-47be-abb0-a5cb08a39750"`
+    //
+    // Поддерживаемые поля для фильтрации: `service_uuid`
+    rpc getList (GetListRequest) returns (GetListResponse) {
         option (google.api.http) = {
             get: "/v1/cloud/mysql/backup",
         };
@@ -25,7 +32,7 @@ service MysqlBackupService {
     //
     // Для получения доступных идентификаторов резервных копий `copy_id` необходимо использовать метод
     // "Получить список доступных резервных копий MySQL" из API "Управление резервными копиями MySQL".
-    rpc restore(RestoreRequest) returns (RestoreResponse) {
+    rpc restore (RestoreRequest) returns (RestoreResponse) {
         option (google.api.http) = {
             post: "/v1/cloud/mysql/backup/{copy_id}",
             body: "*"
@@ -35,7 +42,7 @@ service MysqlBackupService {
     // Получить список заданий на восстановление PostgreSQL
     //
     // Возвращает список заданий на восстановление с их статусами.
-    rpc getOrders(GetOrdersRequest) returns (GetOrdersResponse) {
+    rpc getOrders (GetOrdersRequest) returns (GetOrdersResponse) {
         option (google.api.http) = {
             get: "/v1/cloud/mysql/backup/orders",
         };
@@ -43,6 +50,7 @@ service MysqlBackupService {
 }
 
 message GetListRequest {
+    // Фильтр для выборки резервных копий
     string filter = 1;
 }
 

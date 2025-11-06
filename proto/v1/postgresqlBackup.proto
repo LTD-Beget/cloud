@@ -12,6 +12,13 @@ service PostgresqlBackupService {
     //
     // Отдаёт список доступных к восстановлению резервных копий. Информация о копии содержит данные о сервисе,
     // дату создания копии
+    //
+    // **Фильтрация:**
+    //
+    // Формат фильтра описан в разделе "Фильтрация и сортировка" описания API.\
+    // Пример: `name = "fe190419-e16d-47be-abb0-a5cb08a39750"`
+    //
+    // Поддерживаемые поля для фильтрации: `service_uuid`
     rpc getList(GetListRequest) returns (GetListResponse) {
         option (google.api.http) = {
             get: "/v1/cloud/postgresql/backup",
@@ -42,6 +49,7 @@ service PostgresqlBackupService {
 }
 
 message GetListRequest {
+    // Фильтр для выборки резервных копий
     string filter = 1;
 }
 
