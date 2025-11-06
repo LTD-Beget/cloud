@@ -15,8 +15,7 @@ service ProjectService {
     //
     // **Фильтрация:**
     //
-    // Формат фильтра описан в разделе "Фильтрация и сортировка" описания API.
-    //
+    // Формат фильтра описан в разделе "Фильтрация и сортировка" описания API.\
     // Пример: `name : "test" AND (description = "test-description" OR description : "sample")`
     //
     // Поддерживаемые поля для фильтрации: `name`, `description`, `is_default`
