@@ -446,6 +446,9 @@ message CdnCreateError {
 
             // Проект не найден или недоступен
             PROJECT_NOT_FOUND = 14;
+
+            // Создание недоступно
+            SERVICE_DISABLED = 15;
         }
 
     }
