@@ -43,6 +43,20 @@ service CdnService {
         };
     }
 
+    // Перевыпустить SSL сертификат
+    //
+    // Выполняет переприменение настроек DNS для доменов прилинкованных к данной
+    // CDN(установка CNAME записи), и перевыпускает SSL сертификат.
+    //
+    // Для получения доступных идентификаторов сервисов `service_id` необходимо использовать метод
+    // "Получить информацию о сервисах" из API "Управляемые сервисы".
+    rpc renewSsl(RenewSslRequest) returns (RenewSslResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloud/cdn/{service_id}/renew-ssl",
+            body: "*"
+        };
+    }
+
     // Очистить весь кеш для CDN ресурса
     //
     // Выполняет очистку всего кеша CDN
@@ -250,6 +264,84 @@ message ChangeSettingResponse {
             INTERNAL_ERROR = 1;
 
             INVALID_OPTION = 2;
+        }
+    }
+}
+
+message RenewSslRequest {
+    // Идентификатор CDN, в формате uuid v4
+    string service_id = 1;
+}
+
+message RenewSslResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о CDN
+        Cdn cdn = 1;
+
+        Error error = 2;
+
+        DomainErrors domain_errors = 3;
+    }
+
+    message Error {
+        // Код ошибки
+        Code code = 1;
+
+        // Описание ошибки
+        string message = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+        }
+    }
+
+    message DomainErrors {
+        repeated DomainError domain_error = 2;
+    }
+
+    message DomainError {
+        // Код ошибки
+        Code code = 1;
+
+        // Описание ошибки
+        string message = 2;
+
+        // Имя домена
+        string domain = 3;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+
+            // Домен не зарегистрирован
+            DOMAIN_NOT_REGISTERED = 2;
+
+            // У домена указаны NS сервера отличные от серверов Beget -
+            // ns1.beget.com
+            // ns2.beget.com
+            // ns1.beget.pro
+            // ns2.beget.pro
+            DOMAIN_INCORRECT_NS = 3;
+
+            // Домен не является доменом третьего уровня
+            NOT_SUBDOMAIN = 4;
+
+            // Домен не найден
+            DOMAIN_NOT_FOUND = 5;
+
+            // Домен используется другой CDN
+            DOMAIN_ALREADY_USED = 6;
+
+            // Некорректный домен
+            DOMAIN_INVALID = 7;
         }
     }
 }
@@ -504,6 +596,8 @@ message Cdn {
 
     Settings settings = 4;
 
+    bool ssl_enabled = 6;
+
     // Количество трафика за месяц в MB
     int64 traffic = 5;
 }
@@ -519,6 +613,7 @@ message ResourceDomain {
         _ = 0;
         CONFIGURING = 1;
         WORKING = 2;
+        WORKING_NO_SSL = 3;
     }
 }
 
