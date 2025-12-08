@@ -179,6 +179,11 @@ message ChangeResourceDomainsResponse {
         // Имя домена
         string domain = 3;
 
+        // Дополнительная информация о ошибке
+        oneof details {
+            DomainAlreadyUsedDetails domain_already_used_details = 4;
+        }
+
         enum Code {
             // Зарезервированный код ошибки
             _ = 0;
@@ -202,11 +207,21 @@ message ChangeResourceDomainsResponse {
             // Домен не найден
             DOMAIN_NOT_FOUND = 5;
 
-            // Домен используется другой Cdn
+            // Домен используется другим сервисом
             DOMAIN_ALREADY_USED = 6;
 
             // Некорректный домен
             DOMAIN_INVALID = 7;
+        }
+
+        message DomainAlreadyUsedDetails {
+            string service_uuid = 1;
+            ServiceType service_type = 2;
+
+            enum ServiceType {
+                _ = 0;
+                CLOUD = 1;
+            }
         }
     }
 }
@@ -450,7 +465,6 @@ message CdnCreateError {
             // Создание недоступно
             SERVICE_DISABLED = 15;
         }
-
     }
 
     message DomainError {
@@ -461,6 +475,11 @@ message CdnCreateError {
         Code code = 2;
 
         string domain = 3;
+
+        // Дополнительная информация о ошибке
+        oneof details {
+            DomainAlreadyUsedDetails domain_already_used_details = 4;
+        }
 
         enum Code {
             // Зарезервированный код ошибки
@@ -485,7 +504,7 @@ message CdnCreateError {
             // Домен не найден
             DOMAIN_NOT_FOUND = 5;
 
-            // Домен используется другой Cdn
+            // Домен используется другим сервисом
             DOMAIN_ALREADY_USED = 6;
 
             // Некорректный домен
@@ -493,6 +512,16 @@ message CdnCreateError {
 
             // Не удалось получить А запись домена
             DOMAIN_NOT_RESOLVED = 8;
+        }
+
+        message DomainAlreadyUsedDetails {
+            string service_uuid = 1;
+            ServiceType service_type = 2;
+
+            enum ServiceType {
+                _ = 0;
+                CLOUD = 1;
+            }
         }
     }
 }

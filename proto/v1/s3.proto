@@ -194,6 +194,11 @@ message ChangeDomainResponse {
         // Код ошибки
         Code code = 2;
 
+        // Дополнительная информация о ошибке
+        oneof details {
+            DomainAlreadyUsedDetails domain_already_used_details = 3;
+        }
+
         enum Code {
             // Зарезервированный код ошибки
             _ = 0;
@@ -216,6 +221,19 @@ message ChangeDomainResponse {
 
             // Домен не найден на аккаунте пользователя
             DOMAIN_NOT_FOUND = 7;
+
+            // Домен уже используется другим сервисом
+            DOMAIN_ALREADY_USED = 8;
+        }
+
+        message DomainAlreadyUsedDetails {
+            string service_uuid = 1;
+            ServiceType service_type = 2;
+
+            enum ServiceType {
+                _ = 0;
+                CLOUD = 1;
+            }
         }
     }
 }
