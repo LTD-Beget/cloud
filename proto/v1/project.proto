@@ -58,6 +58,14 @@ service ProjectService {
             delete: "/v1/cloud/projects/{project_id}"
         };
     }
+
+    // Закрепить/открепить проект в интерфейсе
+    rpc changePinned(ChangePinnedRequest) returns (ChangePinnedResponse) {
+        option (google.api.http) = {
+            put: "/v1/cloud/projects/{project_id}/pin"
+            body: "*"
+        };
+    }
 }
 
 message GetProjectListRequest {
@@ -206,6 +214,38 @@ message RemoveProjectResponse {
     }
 }
 
+message ChangePinnedRequest {
+    // Идентификатор проекта в формате UUID
+    string project_id = 1;
+
+    // Отображение проекта в интерфейсе как закреплённого
+    bool ui_pinned = 2;
+}
+
+message ChangePinnedResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о проекте
+        Project project = 1;
+
+        // Результат запроса: ошибка при закреплении/откреплении проекта
+        Error error = 2;
+    }
+
+    message Error {
+        // Код ошибки
+        Code code = 1;
+
+        // Сообщение об ошибке
+        string message = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+        }
+    }
+}
+
 // Информация о проекте
 message Project {
     // Уникальный идентификатор проекта в формате UUID
@@ -225,4 +265,10 @@ message Project {
 
     // Дата последнего обновления в формате RFC3339
     string updated_at = 8;
+
+    // Отображение проекта в интерфейсе как закреплённого
+    bool ui_pinned = 9;
+
+    // Дата последнего изменения значения поля ui_pinned в формате W3C
+    string ui_pin_changed_at = 10;
 }
