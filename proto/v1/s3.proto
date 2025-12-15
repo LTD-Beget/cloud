@@ -166,6 +166,18 @@ message ChangeCorsResponse {
 
             // Некорректный домен
             INVALID_DOMAIN = 5;
+
+            // Некорректный список HTTP методов
+            INVALID_HTTP_METHODS = 6;
+
+            // Некорректное значение cache_ttl
+            INVALID_CACHE_TTL = 7;
+
+            // Некорректный список заголовков Access-Control-Allow-Headers
+            INVALID_ALLOW_HEADERS = 8;
+
+            // Некорректный список заголовков Access-Control-Expose-Headers
+            INVALID_EXPOSE_HEADERS = 9;
         }
     }
 }
