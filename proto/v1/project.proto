@@ -19,6 +19,13 @@ service ProjectService {
     // Пример: `name : "test" AND (description = "test-description" OR description : "sample")`
     //
     // Поддерживаемые поля для фильтрации: `name`, `description`, `is_default`
+    //
+    // **Сортировка:**
+    //
+    // Формат сортировки описан в разделе "Фильтрация и сортировка" описания API.\
+    // Пример: `created_at desc`
+    //
+    // Поддерживаемые поля для сортировки: `created_at`
     rpc getList (GetProjectListRequest) returns (GetProjectListResponse) {
         option (google.api.http) = {
             get: "/v1/cloud/projects/list"
@@ -77,6 +84,9 @@ message GetProjectListRequest {
 
     // Фильтр для выборки проектов
     string filter = 3;
+
+    // Сортировка списка проектов
+    string sort = 4;
 }
 
 message GetProjectListResponse {
@@ -271,4 +281,7 @@ message Project {
 
     // Дата последнего изменения значения поля ui_pinned в формате W3C
     string ui_pin_changed_at = 10;
+
+    // Ранг сортировки для отображения, заполняется только при использовании соответствующей сортировки в запросе
+    string display_rank = 11;
 }
