@@ -19,6 +19,13 @@ service ProjectService {
     // Пример: `name : "test" AND (description = "test-description" OR description : "sample")`
     //
     // Поддерживаемые поля для фильтрации: `name`, `description`, `is_default`
+    //
+    // **Сортировка:**
+    //
+    // Формат сортировки описан в разделе "Фильтрация и сортировка" описания API.\
+    // Пример: `created_at desc`
+    //
+    // Поддерживаемые поля для сортировки: `created_at`
     rpc getList (GetProjectListRequest) returns (GetProjectListResponse) {
         option (google.api.http) = {
             get: "/v1/cloud/projects/list"
