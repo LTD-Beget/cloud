@@ -533,6 +533,8 @@ message Cdn {
 
     Settings settings = 4;
 
+    bool ssl_enabled = 6;
+
     // Количество трафика за месяц в MB
     int64 traffic = 5;
 }
@@ -548,6 +550,7 @@ message ResourceDomain {
         _ = 0;
         CONFIGURING = 1;
         WORKING = 2;
+        WORKING_NO_SSL = 3;
     }
 }
 
