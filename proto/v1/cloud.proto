@@ -541,6 +541,9 @@ message Service {
 
         // Работа сервиса приостановлена из за нехватки средств
         SUSPENDED_INSUFFICIENT_FUNDS = 1;
+
+        // Работа с сервисом временно приостановленна по техническим причинам
+        SUSPENDED_SERVICE_MAINTENANCE = 2;
     }
 }
 
