@@ -158,18 +158,21 @@ message ChangeResourceDomainsResponse {
         ResourceDomains resource_domain = 1;
 
         // Результат запроса: ошибка при смене доменов
-        Errors error = 2;
+        DomainErrors domain_errors = 2;
+
+        // Результат запроса: ошибка при обработке запроса
+        Error error = 3;
     }
 
     message ResourceDomains {
         repeated ResourceDomain resource_domain = 1;
     }
 
-    message Errors {
-        repeated Error error = 2;
+    message DomainErrors {
+        repeated DomainError domain_error = 2;
     }
 
-    message Error {
+    message DomainError {
         // Код ошибки
         Code code = 1;
 
@@ -224,6 +227,25 @@ message ChangeResourceDomainsResponse {
             }
         }
     }
+
+    message Error {
+        // Код ошибки
+        Code code = 1;
+
+        // Описание ошибки
+        string message = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 2;
+        }
+    }
 }
 
 message GetSourceDomainsRequest {
@@ -265,6 +287,9 @@ message ChangeSettingResponse {
             INTERNAL_ERROR = 1;
 
             INVALID_OPTION = 2;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 3;
         }
     }
 }
@@ -301,6 +326,9 @@ message PurgeAllCacheResponse {
             // Много запросов на сброс кеша
             // Допускается сброс кеша не чаще 1 раза в 5 минут
             TOO_MANY_REQUESTS = 2;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 3;
         }
     }
 }
@@ -336,6 +364,9 @@ message PurgeCacheByPathsResponse {
 
             // Внутренняя ошибка
             INTERNAL_ERROR = 1;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 2;
         }
     }
 }
@@ -371,6 +402,9 @@ message PreloadCacheByPathsResponse {
 
             // Внутренняя ошибка
             INTERNAL_ERROR = 1;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 2;
         }
     }
 }
@@ -414,7 +448,6 @@ message CdnCreateParams {
 
     message Settings {
     }
-
 }
 
 message CdnCreateError {
@@ -462,7 +495,7 @@ message CdnCreateError {
             // Проект не найден или недоступен
             PROJECT_NOT_FOUND = 14;
 
-            // Создание недоступно
+            // Доступ к сервису заблокирован
             SERVICE_DISABLED = 15;
         }
     }
@@ -573,6 +606,9 @@ message SourceDomain {
     // Имя сервиса (S3), которому принадлежит домен, для отображения в URL
     string source_service_slug = 6;
 
+    // Протокол для обращения к источнику контента(HTTP/HTTPS)
+    SourceProtocol source_protocol = 7;
+
     enum SourceServiceType {
         // Доменное имя
         DOMAIN = 0;
@@ -580,6 +616,11 @@ message SourceDomain {
         S3 = 1;
         // IP-адрес VPS
         VPS = 2;
+    }
+
+    enum SourceProtocol {
+        HTTPS = 0;
+        HTTP = 1;
     }
 }
 
