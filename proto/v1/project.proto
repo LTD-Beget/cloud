@@ -25,7 +25,7 @@ service ProjectService {
     // Формат сортировки описан в разделе "Фильтрация и сортировка" описания API.\
     // Пример: `created_at desc`
     //
-    // Поддерживаемые поля для сортировки: `created_at`
+    // Поддерживаемые поля для сортировки: `created_at`, `display_rank`
     rpc getList (GetProjectListRequest) returns (GetProjectListResponse) {
         option (google.api.http) = {
             get: "/v1/cloud/projects/list"
@@ -230,6 +230,12 @@ message ChangePinnedRequest {
 
     // Отображение проекта в интерфейсе как закреплённого
     bool ui_pinned = 2;
+
+    // Ранг проекта, непосредственно после которого будет размещен перемещаемый проект в интерфейсе как закреплённый
+    string after_rank = 3;
+    
+    // Ранг проекта, непосредственно до которого будет размещен перемещаемый проект в интерфейсе как закреплённый
+    string before_rank = 4;
 }
 
 message ChangePinnedResponse {
@@ -282,6 +288,6 @@ message Project {
     // Дата последнего изменения значения поля ui_pinned в формате W3C
     string ui_pin_changed_at = 10;
 
-    // Ранг сортировки для отображения, заполняется только при использовании соответствующей сортировки в запросе
+    // Ранг проекта, заполняется только при использовании соответствующей сортировки в запросе
     string display_rank = 11;
 }
