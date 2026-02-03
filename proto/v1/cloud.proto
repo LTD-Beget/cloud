@@ -70,7 +70,7 @@ service CloudService {
     // Формат сортировки описан в разделе "Фильтрация и сортировка" описания API.\
     // Пример: `created_at desc`
     //
-    // Поддерживаемые поля для сортировки: `created_at`, `display_name`, `description`, `region`, `ui_pin_changed_at`
+    // Поддерживаемые поля для сортировки: `created_at`, `display_name`, `description`, `region`, `ui_pin_changed_at`, `display_rank`
     rpc getList(GetListRequest) returns (GetListResponse) {
         option (google.api.http) = {
             get: "/v1/cloud"
@@ -183,6 +183,12 @@ message CreateRequest {
 
     // Отображение сервиса в интерфейсе как закреплённого
     bool ui_pinned = 11;
+
+    // Ранг сервиса, после которого будет размещен облачный сервис в интерфейсе как закреплённый
+    string ui_pinned_after_rank = 12;
+
+    // Ранг сервиса, до которого будет размещен облачный сервис в интерфейсе как закреплённый
+    string ui_pinned_before_rank = 13;
 }
 
 message CreateResponse {
@@ -385,6 +391,12 @@ message ChangePinnedRequest {
 
     // Отображение сервиса в интерфейсе как закреплённого
     bool ui_pinned = 2;
+
+    // Ранг сервиса, непосредственно после которого будет размещен перемещаемый облачный сервис в интерфейсе как закреплённого
+    string after_rank = 3;
+
+    // Ранг сервиса, непосредственно до которого будет размещен перемещаемый облачный сервис в интерфейсе как закреплённого
+    string before_rank = 4;
 }
 
 message ChangePinnedResponse {
@@ -504,6 +516,9 @@ message Service {
 
     // Сервис находится в состоянии восстановления из резервной копии
     bool restoring = 23;
+
+    // Ранг сервиса, заполняется только при использовании соответствующей сортировки в запросе
+    string display_rank = 29;
 
     enum Type {
         MYSQL5 = 0;
