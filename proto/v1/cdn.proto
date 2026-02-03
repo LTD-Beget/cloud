@@ -645,19 +645,20 @@ message Settings {
     Stale stale = 6;
 
     // Параметр управляет доступом к контенту из указанных стран и их регионов
-    GeoAcl geo_acl = 7;
+    GeoAcl geo_acl = 7 [deprecated = true];
 
     // Параметры контролирует доступ к контенту с указанных доменных имён
-    RefererAcl referer_acl = 8;
+    RefererAcl referer_acl = 8 [deprecated = true];
 
     // Параметры политики доступа по IP-адресам
-    IpAddressAcl ip_address_acl = 9;
+    IpAddressAcl ip_address_acl = 9 [deprecated = true];
+
+    // Параметры политики доступа по User-Agent
+    UserAgentAcl user_agent_acl = 11 [deprecated = true];
 
     // Редирект с HTTP на HTTPS
     bool redirect_http_to_https = 10;
 
-    // Параметры политики доступа по User-Agent
-    UserAgentAcl user_agent_acl = 11;
 
     // Параметр настраивает доступ к контенту с токенизированными URL-адресами, сгенерированными с помощью алгоритма MD5
     TokenizedUrlSecureKey tokenized_url_secure_key = 12;
@@ -693,9 +694,9 @@ message Settings {
         // Включить следование по редиректам источника
         bool enable = 1;
 
-        // Список конкретных кодов редиректов HTTP
-        // при пустом списке будет следовать по всем кодам редиректов HTTP
-        repeated Code code = 2;
+        // На данный момент следование происходит по всем кодам -
+        // 301/302/303/307/308
+        repeated Code code = 2 [deprecated = true];
         enum Code {
             HTTP_301 = 0;
             HTTP_302 = 1;
@@ -710,7 +711,7 @@ message Settings {
         bool enable = 1;
 
         // Режим кеширования, source - наследовать время с источника, custom - задать произвольное время
-        Type type = 3;
+        Type type = 3 [deprecated = true];
 
         // Время кеширования в секундах
         uint32 time = 2;
@@ -739,6 +740,8 @@ message Settings {
     }
 
     message GeoAcl {
+        option deprecated = true;
+
         bool enable = 1;
         PolicyType policy_type = 2;
 
@@ -756,6 +759,8 @@ message Settings {
     }
 
     message RefererAcl {
+        option deprecated = true;
+
         bool enable = 1;
         PolicyType policy_type = 2;
         repeated string excepted_domain = 3;
@@ -767,6 +772,8 @@ message Settings {
     }
 
     message IpAddressAcl {
+        option deprecated = true;
+
         bool enable = 1;
         PolicyType policy_type = 2;
         repeated string excepted_ip = 3;
@@ -778,6 +785,8 @@ message Settings {
     }
 
     message UserAgentAcl {
+        option deprecated = true;
+
         bool enable = 1;
         PolicyType policy_type = 2;
         repeated string excepted_user_agent = 3;
@@ -803,6 +812,9 @@ message Settings {
         bool enable = 1;
         repeated HttpMethod http_method = 2;
 
+        // Методы GET/HEAD/OPTIONS на данный момент
+        // не являются опциональными и добавляются всегда
+        // при включенной опции
         enum HttpMethod {
             GET = 0;
             HEAD = 1;
@@ -816,7 +828,9 @@ message Settings {
 
     message GzipCompression {
         bool enable = 1;
-        repeated string content_type = 2;
+
+        // На данный момент gzip сжатие примяется ко всему списку content_type
+        repeated string content_type = 2 [deprecated = true];
         // Список доступных content_type
         //
         // application/javascript
@@ -879,19 +893,22 @@ message Settings {
 
             // true — добавлять заголовок Access-Control-Allow-Origin в ответ независимо от кода состояния HTTP-ответа.
             // false — добавлять заголовок Access-Control-Allow-Origin только в ответы с кодами состояния HTTP: 200, 201, 204, 206, 301, 302, 303, 304, 307 или 308.
-            bool always = 3;
+            bool always = 3 [deprecated = true];
         }
     }
 
     message ResponseHeadersHidingPolicy {
         bool enabled = 1;
+
         repeated string excepted = 2;
-        Mode mode = 3;
+
+        // Доступен режим только для скрытия заголовков - HIDE
+        Mode mode = 3 [deprecated = true];
 
         enum Mode {
-            // Cкрыть все HTTP-заголовки из ответа, кроме перечисленных в поле exceptioned
-            HIDE = 0;
             // Cкрыть HTTP-заголовки, перечисленные в поле exceptioned, из ответа
+            HIDE = 0;
+            // Cкрыть все HTTP-заголовки из ответа, кроме перечисленных в поле exceptioned
             SHOW = 1;
         }
     }
