@@ -424,6 +424,20 @@ message S3 {
 
     // Данные о SFTP доступе
     Sftp sftp = 8;
+
+    // Данные о прикрепленном CDN
+    Cdn attached_cdn = 9;
+
+    message Cdn {
+        // Идентификатор CDN сервиса в формате uuid v4
+        string service_id = 1;
+
+        // Имя CDN сервиса
+        string service_display_name = 2;
+
+        // Имя CDN сервиса, для отображения в URL
+        string service_slug = 3;
+    }
 }
 
 message Ftp {
