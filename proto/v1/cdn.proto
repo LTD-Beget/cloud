@@ -244,6 +244,9 @@ message ChangeResourceDomainsResponse {
 
             // Доступ к сервису заблокирован
             SERVICE_DISABLED = 2;
+
+            // Доменов для раздачи контента передано больше допустимого
+            DOMAIN_LIMIT = 3;
         }
     }
 }
