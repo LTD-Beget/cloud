@@ -500,6 +500,9 @@ message CdnCreateError {
 
             // Доступ к сервису заблокирован
             SERVICE_DISABLED = 15;
+
+            // Указанный сервис-источник не найден или не может быть использован в качестве источника CDN
+            INVALID_SOURCE_SERVICE_ID = 16;
         }
     }
 
@@ -597,7 +600,7 @@ message SourceDomain {
     // Идентификатор сервис, которому принадлежит домен(S3/VPS), в формате uuid v4
     string source_service_id = 2;
 
-    // Тип сервиса
+    // Тип сервиса источника. Заполняется только в ответе, при создании не используется
     SourceServiceType source_service_type = 3;
 
     // Имя домена или IP-адрес
