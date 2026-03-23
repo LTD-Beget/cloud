@@ -444,12 +444,39 @@ message CdnCreateParams {
     repeated string resource_domain = 1;
 
     // Информация о домене источнике контента
-    SourceDomain source_domain = 2;
+    SourceDomain source_domain = 2 [deprecated=true];
 
-    // Настройки CDN
-    Settings settings = 3;
+    SourceParams source_params = 3;
 
-    message Settings {
+    message SourceParams {
+        // Идентификатор CDN, в формате uuid v4
+        string cdn_service_id = 1;
+
+        // Идентификатор сервиса, которому принадлежит домен(S3/VPS), в формате uuid v4
+        string source_service_id = 2;
+
+        // Тип сервиса
+        SourceServiceType source_service_type = 3;
+
+        // Имя домена или IP-адрес
+        string domain = 4;
+
+        // Протокол для обращения к источнику контента(HTTP/HTTPS)
+        SourceProtocol source_protocol = 5;
+
+        enum SourceServiceType {
+            // Доменное имя
+            DOMAIN = 0;
+            // S3 хранилище
+            S3 = 1;
+            // VPS
+            VPS = 2;
+        }
+
+        enum SourceProtocol {
+            HTTPS = 0;
+            HTTP = 1;
+        }
     }
 }
 
@@ -597,7 +624,7 @@ message SourceDomain {
     // Идентификатор CDN, в формате uuid v4
     string cdn_service_id = 1;
 
-    // Идентификатор сервис, которому принадлежит домен(S3/VPS), в формате uuid v4
+    // Идентификатор сервиса, которому принадлежит домен(S3/VPS), в формате uuid v4
     string source_service_id = 2;
 
     // Тип сервиса источника. Заполняется только в ответе, при создании не используется
