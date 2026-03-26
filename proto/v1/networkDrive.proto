@@ -1,0 +1,468 @@
+syntax = 'proto3';
+
+package beget.cloud.v1.networkDrive;
+import "google/api/annotations.proto";
+
+// Упарвление сетевыми дисками
+//
+// Предоставляет набор методов для работы с сетевыми дисками.
+service NetworkDriveService {
+    // Получить лимиты сетевых дисков в рамках аккаунта.
+    //
+    // Получает лимиты сетевых дисков в рамках аккаунта.
+    //
+    // Помимо лимитов на размер диска для каждой конфигурации, так же присутствуют
+    // лимиты на количество сетевых дисков и их общий размер в рамках аккаунта.
+    rpc getLimits(GetLimitsRequest) returns (GetLimitsResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloud/network-drive/limits",
+        };
+    }
+
+    // Изменить размер сетевого диска
+    //
+    // Изменяет размер сетевого диска.
+    //
+    // Изменить размер сетевого диска можно только в большую сторону и кратно размеру шага.
+    // Для получения доступных лимитов по размеру сетевого диска и размеру шага, используйте метод
+    // "Получить список доступных конфигураций" из API "Управляемые сервисы".
+    rpc resize(ResizeRequest) returns (ResizeResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloud/network-drive/{service_id}/resize",
+            body: "*"
+        };
+    }
+
+    // Подключить сетевой диск
+    //
+    // Подключает сетевой диск к сервису.
+    //
+    // После подключения сетевой диск становится доступен для использования в сервисе.
+    rpc mount(MountRequest) returns (MountResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloud/network-drive/{service_id}/mount",
+            body: "*"
+        };
+    }
+
+    // Отключить сетевой диск
+    //
+    // Отключает сетевой диск от сервиса.
+    //
+    // После отключения сетевой диск становится недоступен для использования в сервисе.
+    rpc unmount(UnmountRequest) returns (UnmountResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloud/network-drive/{service_id}/unmount",
+            body: "*"
+        };
+    }
+
+    // Получить список присоединенных сетевых дисков
+    //
+    // Возвращает список сетевых дисков, присоединенных к сервису.
+    rpc getMounts(GetMountsRequest) returns (GetMountsResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloud/network-drive/mounts"
+        };
+    }
+
+    // Присоединить несколько сетевых дисков к сервису
+    //
+    // Присоединяет несколько сетевых дисков к сервису.
+    //
+    // Идемпотентная операция: все присоединенные сетевые диски, не указанные в параметрах будут отсоединены.
+    rpc setMounts(SetMountsRequest) returns (SetMountsResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloud/network-drive/mounts",
+            body: "*"
+        };
+    }
+}
+
+message GetLimitsRequest {
+
+}
+
+message GetLimitsResponse {
+    // Массив лимитов по регионам
+    repeated Limits limits = 1;
+
+    message Limits {
+        // Регион, для которого заданы лимиты
+        string region = 1;
+
+        // Максимальное количество сетевых дисков
+        uint32 max_network_drives = 2;
+
+        // Количество сетевых дисков, доступных для создания
+        uint32 available_network_drives = 3;
+
+        // Максимальное количество подключенных сетевых дисков к ресурсу
+        uint32 max_mounts_per_resource = 4;
+
+        // Общий максимальный размер сетевых дисков, разделенный по классам хранения
+        repeated TotalSize max_total_size = 5;
+
+        // Общий доступный размер сетевых дисков, разделенный по классам хранения
+        repeated TotalSize available_total_size = 6;
+
+        message TotalSize {
+            // Размер в гигабайтах
+            uint32 size = 1;
+
+            // Класс сетевого хранилища
+            StorageClass storage_class = 2;
+
+            enum StorageClass {
+                _ = 0;
+                NVME = 1;
+                HDD = 2;
+            }
+        }
+    }
+}
+
+message ResizeRequest {
+    // Идентификатор сервиса в формате uuid v4
+    string service_id = 1;
+
+    // Новый размер сетевого диска в гигабайтах
+    uint32 size = 2;
+}
+
+message ResizeResponse {
+    oneof result {
+        // Результат запроса: информация о сервисе
+        NetworkDrive network_drive = 1;
+
+        // Результат запроса: ошибка при изменении размера сетевого диска
+        Error error = 2;
+    }
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        Code code = 2;
+
+        enum Code {
+            _ = 0;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 1;
+
+            // Недостаточно средств на счете
+            INSUFFICIENT_FUNDS = 2;
+
+            // Изменение размера сетевого диска временно недоступно
+            TEMPORARILY_UNAVAILABLE = 3;
+
+            // Некорректный размер сетевого диска (например, выходит за рамки конфигурации или не кратен размеру шага)
+            INVALID_SIZE = 4;
+
+            // Размер сетевого диска превышает лимит
+            SIZE_LIMIT_REACHED = 5;
+        }
+    }
+}
+
+message MountRequest {
+    // Идентификатор сервиса в формате uuid v4
+    string service_id = 1;
+
+    // Идентификатор ресурса в формате uuid v4, к которому нужно присоединить диск
+    string resource_id = 2;
+
+    // Тип ресурса
+    ResourceType resource_type = 3;
+
+    enum ResourceType {
+        VPS = 0;
+    }
+}
+
+message MountResponse {
+    oneof result {
+        // Результат запроса: информация о сервисе
+        NetworkDrive network_drive = 1;
+
+        // Результат запроса: ошибка при обновлении информации о сервисе
+        Error error = 2;
+    }
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        enum Code {
+            _ = 0;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 1;
+
+            // Ресурс не найден
+            RESOURCE_NOT_FOUND = 2;
+
+            // Неверный тип ресурса
+            INVALID_RESOURCE_TYPE = 3;
+
+            // Сетевой диск уже подключен к другому ресурсу
+            ALREADY_MOUNTED_TO_ANOTHER_RESOURCE = 4;
+
+            // К ресурсу примонтировано максимально доступное количество сетевых дисков
+            MOUNT_LIMIT_REACHED = 5;
+
+            // Сетевой диск и ресурс расположены в разных регионах
+            REGION_MISMATCH = 6;
+        }
+    }
+}
+
+message UnmountRequest {
+    // Идентификатор сервиса в формате uuid v4
+    string service_id = 1;
+}
+
+message UnmountResponse {
+    oneof result {
+        // Результат запроса: информация о сервисе
+        NetworkDrive network_drive = 1;
+
+        // Результат запроса: ошибка при обновлении информации о сервисе
+        Error error = 2;
+    }
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        enum Code {
+            _ = 0;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 1;
+
+            // Диск не подключен к ресурсу
+            MOUNT_NOT_FOUND = 2;
+        }
+    }
+}
+
+message GetMountsRequest {
+    // Идентификатор ресурса в формате uuid v4, к которому подключены сетевые диски
+    string resource_id = 1;
+
+    // Тип ресурса
+    ResourceType resource_type = 2;
+
+    enum ResourceType {
+        VPS = 0;
+    }
+
+}
+
+message GetMountsResponse {
+    oneof result {
+        // Результат запроса: список подключенных сетевых дисков
+        NetworkDriveList network_drive_list = 1;
+
+        // Результат запроса: ошибка при получении информации о подключенных сетевых дисках
+        Error error = 2;
+    }
+
+    message NetworkDriveList {
+        // Список подключенных к ресурсу сетевых дисков
+        repeated NetworkDrive network_drive = 1;
+    }
+
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        enum Code {
+            _ = 0;
+
+            // Ресурс не найден
+            RESOURCE_NOT_FOUND = 1;
+
+            // Неверный тип ресурса
+            INVALID_RESOURCE_TYPE = 2;
+        }
+    }
+}
+
+message SetMountsRequest {
+    // Список идентификаторов сетевых дисков в формате uuid v4, которые необходимо подключить к ресурсу
+    repeated string service_id = 1;
+
+    // Идентификатор ресурса в формате uuid v4, к которому подключить сетевые диски
+    string resource_id = 2;
+
+    // Тип ресурса
+    ResourceType resource_type = 3;
+
+    enum ResourceType {
+        VPS = 0;
+    }
+}
+
+message SetMountsResponse {
+    oneof result {
+        // Результат запроса: список подключенных сетевых дисков
+        NetworkDriveList network_drive_list = 1;
+
+        // Результат запроса: список ошибок при подключении сетевых дисков
+        ErrorList error_list = 2;
+    }
+
+    message NetworkDriveList {
+        // Список подключенных к ресурсу сетевых дисков
+        repeated NetworkDrive network_drive = 1;
+    }
+
+    message ErrorList {
+        repeated Error error = 1;
+    }
+
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        enum Code {
+            _ = 0;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 1;
+
+            // Сервис не найден
+            SERVICE_NOT_FOUND = 2;
+
+            // Ресурс не найден
+            RESOURCE_NOT_FOUND = 3;
+
+            // Неверный тип ресурса
+            INVALID_RESOURCE_TYPE = 4;
+
+            // К ресурсу примонтировано максимально доступное количество сетевых дисков
+            MOUNT_LIMIT_REACHED = 5;
+
+            // Сетевой диск и ресурс расположены в разных регионах
+            REGION_MISMATCH = 6;
+        }
+    }
+}
+
+message NetworkDriveCreateParams {
+    // Размер сетевого диска в гигабайтах
+    uint32 size = 1;
+}
+
+message NetworkDriveCreateError {
+    // Описание ошибки
+    string message = 1;
+
+    // Код ошибки
+    Code code = 2;
+
+    enum Code {
+        _ = 0;
+
+        // Недостаточно средств на счете
+        INSUFFICIENT_FUNDS = 1;
+
+        // Неизвестная конфигурация
+        CONFIGURATION_NOT_FOUND = 2;
+
+        // Некорректное название сервиса
+        INVALID_DISPLAY_NAME = 3;
+
+        // Некорректное описание сервиса
+        INVALID_DESCRIPTION = 4;
+
+        // Создание сетевого диска временно недоступно
+        TEMPORARILY_UNAVAILABLE = 5;
+
+        // Создание недоступно
+        SERVICE_DISABLED = 6;
+
+        // Проект не найден или недоступен
+        PROJECT_NOT_FOUND = 7;
+
+        // Создано максимально доступное количество сетевых дисков
+        NETWORK_DRIVE_LIMIT_REACHED = 8;
+
+        // Некорректный размер сетевого диска (например, выходит за рамки конфигурации или не кратен размеру шага)
+        INVALID_SIZE = 9;
+
+        // Размер сетевого диска превышает лимит
+        SIZE_LIMIT_REACHED = 10;
+    }
+}
+
+message NetworkDrive {
+    // Идентификатор сетевого диска в формате uuid v4
+    string id = 1;
+
+    // Размер в гигабайтах
+    uint32 size = 2;
+
+    // Класс сетевого диска
+    StorageClass storage_class = 3;
+
+    enum StorageClass {
+        _ = 0;
+        NVME = 1;
+        HDD = 2;
+    }
+
+    // Ресурс, к которому подключен сетевой диск
+    MountedResource mounted_resource = 4;
+
+    message MountedResource {
+        // Идентификатор ресурса в формате uuid v4
+        string service_id = 1;
+
+        // Имя сервиса
+        string service_display_name = 2;
+
+        // Имя сервиса, для отображения в URL
+        string service_slug = 3;
+
+        // Тип ресурса
+        ResourceType resource_type = 4;
+
+        enum ResourceType {
+            _ = 0;
+            VPS = 1;
+        }
+    }
+}
+
+message NetworkDriveConfiguration {
+    // Максимальный размер сетевого диска в гигабайтах
+    uint32 min_size = 1;
+
+    // Минимальный размер сетевого диска в гигабайтах
+    uint32 max_size = 2;
+
+    // Минимальный шаг изменения размера сетевого диска в гигабайтах
+    uint32 step_size = 3;
+
+    // Класс сетевого диска
+    StorageClass storage_class = 4;
+
+    enum StorageClass {
+        _ = 0;
+        NVME = 1;
+        HDD = 2;
+    }
+}
