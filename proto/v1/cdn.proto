@@ -683,6 +683,9 @@ message Settings {
     // Параметр настраивает доступ к контенту с токенизированными URL-адресами, сгенерированными с помощью алгоритма MD5
     TokenizedUrlSecureKey tokenized_url_secure_key = 12;
 
+    // Возможность менять настройку AllowedHttpMethods
+    bool is_allowed_http_methods_locked = 21;
+
     // Параметр задаёт список разрешённых HTTP-методов для контента CDN
     AllowedHttpMethods allowed_http_methods = 13;
 
