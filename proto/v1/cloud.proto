@@ -7,6 +7,7 @@ import "cloud/proto/v1/mysql.proto";
 import "cloud/proto/v1/postgresql.proto";
 import "cloud/proto/v1/s3.proto";
 import "cloud/proto/v1/cdn.proto";
+import "cloud/proto/v1/networkDrive.proto";
 
 // do not use structures.proto here for avoid recursive import
 
@@ -170,6 +171,8 @@ message CreateRequest {
         s3.S3CreateParams s3_params = 8;
         // Дополнительные параметры создаваемого сервиса: CDN
         cdn.CdnCreateParams cdn_params = 9;
+        // Дополнительные параметры создаваемого сервиса: сетевой диск
+        networkDrive.NetworkDriveCreateParams network_drive_params = 14;
     }
 
     // Зарезервированное поле, должно быть пустым
@@ -208,6 +211,9 @@ message CreateResponse {
 
         // Результат запроса: ошибка при создании CDN
         cdn.CdnCreateError cdn_error = 5;
+
+        // Результат запроса: ошибка при создании сетевого диска
+        networkDrive.NetworkDriveCreateError network_drive_error = 6;
     }
 }
 
@@ -490,7 +496,8 @@ message Service {
         // Информация о конкретном сервисе: CDN
         cdn.Cdn cdn = 24;
 
-
+        // Информация о конкретном сервисе: сетевой диск
+        networkDrive.NetworkDrive network_drive = 30;
     }
 
     // Заблокирован ли сервис
@@ -529,6 +536,7 @@ message Service {
         POSTGRESQL164 = 5;
         S_3 = 4;
         CDN = 7;
+        NETWORK_DRIVE = 8;
     }
 
     enum Status {
@@ -599,6 +607,9 @@ message ServiceConfiguration {
 
         // Параметры конфигурации сервиса: облачное S3-совместимое хранилище
         s3.S3Configuration s3 = 12;
+
+        // Параметры конфигурации сервиса: сетевой диск
+        networkDrive.NetworkDriveConfiguration network_drive = 13;
     }
 
     enum Type {
@@ -610,6 +621,7 @@ message ServiceConfiguration {
         S_3 = 4;
         POSTGRESQL164 = 5;
         CDN = 7;
+        NETWORK_DRIVE = 8;
     }
 }
 
@@ -619,4 +631,3 @@ enum ServiceView {
     // Возвращать только базовые (ключевые) поля для повышения производительности.
     SERVICE_VIEW_BASIC = 1;
 }
-
