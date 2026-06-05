@@ -492,6 +492,15 @@ message CdnCreateError {
         // Код ошибки
         Code code = 2;
 
+        oneof details {
+            InsufficientFundsDetails insufficient_funds_details = 3;
+        }
+
+        message InsufficientFundsDetails {
+            double balance = 1;
+            double needed_balance = 2;
+        }
+
         enum Code {
             // Зарезервированный код ошибки
             _ = 0;
