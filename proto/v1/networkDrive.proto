@@ -485,14 +485,8 @@ message NetworkDrive {
         // Идентификатор ресурса в формате uuid v4
         string service_id = 1;
 
-        // Имя сервиса
-        string service_display_name = 2;
-
-        // Имя сервиса, для отображения в URL
-        string service_slug = 3;
-
         // Тип ресурса
-        ResourceType resource_type = 4;
+        ResourceType resource_type = 2;
 
         enum ResourceType {
             _ = 0;
@@ -500,7 +494,7 @@ message NetworkDrive {
         }
 
         // Статус монтирования
-        MountStatus mount_status = 5;
+        MountStatus mount_status = 3;
 
         enum MountStatus {
             MOUNTING = 0;
