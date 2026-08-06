@@ -92,7 +92,459 @@ service S3Service {
             body: "*"
         };
     }
+
+    // Получить список пользователей S3
+    //
+    // Возвращает список пользователей S3.
+    //
+    rpc getUsers(GetUsersRequest) returns (GetUsersResponse) {
+        option (google.api.http) = {
+            get: "/v1/cloud/s3/users",
+        };
+    }
+
+    // Создать пользователя S3
+    //
+    // Создаёт пользователя S3.
+    //
+    rpc createUser(CreateUserRequest) returns (CreateUserResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloud/s3/user",
+            body: "*"
+        };
+    }
+
+    // Обновить информацию о пользователе S3
+    //
+    // Обновляет информацию о пользователе S3, описание и статус(заблокировн/разблокирован).
+    //
+    rpc updateUser(UpdateUserRequest) returns (UpdateUserResponse) {
+        option (google.api.http) = {
+            patch: "/v1/cloud/s3/user/{username}",
+            body: "*"
+        };
+    }
+
+    // Удалить пользователя S3
+    //
+    // Удаляет пользователя S3.
+    //
+    rpc deleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
+        option (google.api.http) = {
+            delete: "/v1/cloud/s3/user/{username}",
+        };
+    }
+
+    // Прикрепить пользователя S3 к бакету
+    //
+    // Прикрепляет пользователя S3 к бакету.
+    //
+    rpc attachUser(AttachUserRequest) returns (AttachUserResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloud/s3/user/{username}/attach",
+            body: "*"
+        };
+    }
+
+    // Открепить пользователя S3 от бакета
+    //
+    // Открепляет пользователя S3 от бакета.
+    //
+    rpc detachUser(DetachUserRequest) returns (DetachUserResponse) {
+        option (google.api.http) = {
+            post: "/v1/cloud/s3/user/{username}/detach",
+            body: "*"
+        };
+    }
+
+    // Сменить права доступа пользователя S3 к бакету
+    //
+    // Меняет права доступа пользователя S3 к бакету.
+    //
+    rpc updateUserPermissions(UpdateUserPermissionsRequest) returns (UpdateUserPermissionsResponse) {
+        option (google.api.http) = {
+            patch: "/v1/cloud/s3/user/{username}/permissions",
+            body: "*"
+        };
+    }
+
+    // Изменить ключи доступа пользователя
+    //
+    // Меняет ключи доступа пользователя.
+    //
+    rpc userChangeAccessKey(UserChangeAccessKeyRequest) returns (UserChangeAccessKeyResponse) {
+        option (google.api.http) = {
+            patch: "/v1/cloud/s3/user/{username}/access-key",
+            body: "*"
+        };
+    }
 }
+
+message GetUsersRequest {}
+
+message GetUsersResponse {
+    repeated S3User user = 1;
+}
+
+message CreateUserRequest {
+    string username = 1;
+    string description = 2;
+    repeated BucketAccess bucket_access = 3;
+
+    message BucketAccess {
+        string bucket_service_id = 1;
+        AccessType access_type = 2;
+    }
+
+    enum AccessType {
+        READONLY = 0;
+        READWRITE = 1;
+        FULL = 2;
+    }
+}
+
+message CreateUserResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о пользователе S3
+        S3User user = 1;
+
+        // Результат запроса: ошибка при создании пользователя S3
+        Error error = 2;
+    }
+
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 2;
+
+            // Некорректное имя пользователЯ
+            INVALID_USERNAME = 3;
+
+            // Пользователь с таким именем уже существует
+            USER_ALREADY_EXISTS = 4;
+
+            // Некорректное описание пользователя
+            INVALID_DESCRIPTION = 5;
+
+            // S3 бакет не найден
+            BUCKET_NOT_FOUND = 6;
+        }
+    }
+}
+
+message UpdateUserRequest {
+    string username = 1;
+    string description = 2;
+    bool blocked = 3;
+}
+
+message UpdateUserResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о пользователе S3
+        S3User user = 1;
+
+        // Результат запроса: ошибка при обновлении пользователя S3
+        Error error = 2;
+    }
+
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 2;
+
+            // Пользователь не найден
+            USER_NOT_FOUND = 3;
+
+            // Некорректное описание пользователя
+            INVALID_DESCRIPTION = 4;
+        }
+    }
+}
+
+message DeleteUserRequest {
+    string username = 1;
+}
+
+message DeleteUserResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: успешное удаление пользователя S3
+        Success success = 1;
+
+        // Результат запроса: ошибка при удалении пользователя S3
+        Error error = 2;
+    }
+
+    message Success {
+    }
+
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 2;
+
+            // Пользователь не найден
+            USER_NOT_FOUND = 3;
+        }
+    }
+}
+
+message AttachUserRequest {
+    string username = 1;
+    BucketAccess bucket_access = 3;
+
+    message BucketAccess {
+        string bucket_service_id = 1;
+        AccessType access_type = 2;
+    }
+
+    enum AccessType {
+        READONLY = 0;
+        READWRITE = 1;
+        FULL = 2;
+    }
+}
+
+message AttachUserResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о пользователе S3
+        S3User user = 1;
+
+        // Результат запроса: ошибка при прикреплении пользователя S3 к бакету
+        Error error = 2;
+    }
+
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 2;
+
+            // Пользователь не найден
+            USER_NOT_FOUND = 3;
+
+            // S3 бакет не найден
+            BUCKET_NOT_FOUND = 4;
+        }
+    }
+}
+
+message DetachUserRequest {
+    string username = 1;
+    string bucket_service_id = 2;
+}
+
+message DetachUserResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о пользователе S3
+        S3User user = 1;
+
+        // Результат запроса: ошибка при откреплении пользователя S3 от бакета
+        Error error = 2;
+    }
+
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 2;
+
+            // Пользователь не найден
+            USER_NOT_FOUND = 3;
+
+            // S3 бакет не найден
+            BUCKET_NOT_FOUND = 4;
+        }
+    }
+}
+
+message UpdateUserPermissionsRequest {
+    string username = 1;
+    BucketAccess bucket_access = 3;
+
+    message BucketAccess {
+        string bucket_service_id = 1;
+        AccessType access_type = 2;
+    }
+
+    enum AccessType {
+        READONLY = 0;
+        READWRITE = 1;
+        FULL = 2;
+    }
+}
+
+message UpdateUserPermissionsResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о пользователе S3
+        S3User user = 1;
+
+        // Результат запроса: ошибка при обновлении прав пользователя S3
+        Error error = 2;
+    }
+
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 2;
+
+            // Пользователь не найден
+            USER_NOT_FOUND = 3;
+
+            // S3 бакет не найден
+            BUCKET_NOT_FOUND = 4;
+        }
+    }
+}
+
+message UserChangeAccessKeyRequest {
+    string username = 1;
+}
+
+message UserChangeAccessKeyResponse {
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о пользователе S3
+        S3User user = 1;
+
+        // Результат запроса: ошибка при смене ключей пользователя S3
+        Error error = 2;
+    }
+
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Внутренняя ошибка
+            INTERNAL_ERROR = 1;
+
+            // Доступ к сервису заблокирован
+            SERVICE_DISABLED = 2;
+
+            // Пользователь не найден
+            USER_NOT_FOUND = 3;
+        }
+    }
+}
+
+message S3User {
+    string username = 1;
+    string description = 2;
+    // Дата создания пользователя в формате RFC3339
+    string date_create = 3;
+    bool is_admin = 4;
+    string access_key = 5;
+    string secret_key = 6;
+    Status status = 7;
+    Blocked blocked = 8;
+    repeated BucketAccess bucket_access = 9;
+
+    enum Status {
+        CREATING = 0;
+        CREATED = 1;
+    }
+
+    enum Blocked {
+        NONE = 0;
+        AUTO = 1;
+        MANUAL = 2;
+    }
+
+    message BucketAccess {
+        string bucket_service_id = 1;
+        AccessType access_type = 2;
+    }
+
+    enum AccessType {
+        READONLY = 0;
+        READWRITE = 1;
+        FULL = 2;
+        CUSTOM = 3;
+    }
+}
+
 
 message GetQuotaRequest {
 }
