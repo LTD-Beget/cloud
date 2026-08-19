@@ -610,6 +610,9 @@ message ServiceConfiguration {
 
         // Параметры конфигурации сервиса: сетевой диск
         networkDrive.NetworkDriveConfiguration network_drive = 13;
+
+        // Параметры конфигурации сервиса: CDN
+        cdn.CdnConfiguration cdn = 14;
     }
 
     enum Type {

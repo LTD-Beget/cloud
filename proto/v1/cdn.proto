@@ -437,6 +437,18 @@ message GetPriceResponse {
 
     // Сумма недостатка средств на балансе для оплаты использованного трафика и разблокировки CDN
     double required_topup_amount = 2;
+
+    // Количество оставшихся нетарифицируемых запросов ко всем CDN
+    uint64 free_request_count = 3;
+
+    // Общее количество запросов ко всем CDN за день
+    uint64 request_count = 4;
+
+    // Общее количество тарифицируемых запросов ко всем CDN за день
+    uint64 billable_request_count = 5;
+
+    // Общая стоимость запросов за день
+    double request_cost = 6;
 }
 
 message CdnCreateParams {
@@ -612,6 +624,9 @@ message Cdn {
 
     // Количество трафика за месяц в MB
     int64 traffic = 5;
+
+    // Количество запросов за месяц
+    uint64 requests = 7;
 }
 
 message ResourceDomain {
@@ -825,4 +840,15 @@ message Settings {
 
         repeated string header = 2;
     }
+}
+
+message CdnConfiguration {
+    // Бесплатное количество запросов к ресурсу в месяц
+    uint64 free_request_count = 1;
+
+    // Стоимость за 10000 запросов в день
+    double request_price_day = 2;
+
+    // Стоимость за 10000 запросов в месяц
+    double request_price_month = 3;
 }
