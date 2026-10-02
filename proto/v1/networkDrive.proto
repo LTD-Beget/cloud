@@ -3,7 +3,7 @@ syntax = 'proto3';
 package beget.cloud.v1.networkDrive;
 import "google/api/annotations.proto";
 
-// Упарвление сетевыми дисками
+// Управление сетевыми дисками
 //
 // Предоставляет набор методов для работы с сетевыми дисками.
 service NetworkDriveService {
