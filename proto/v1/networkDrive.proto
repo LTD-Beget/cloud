@@ -222,7 +222,7 @@ message MountResponse {
             // Неверный тип ресурса
             INVALID_RESOURCE_TYPE = 3;
 
-            // Сетевой диск уже подключен к другому ресурсу
+            // Сетевой диск уже подключен или в процессе подключения к другому ресурсу
             ALREADY_MOUNTED_TO_ANOTHER_RESOURCE = 4;
 
             // К ресурсу примонтировано максимально доступное количество сетевых дисков
@@ -231,11 +231,14 @@ message MountResponse {
             // Сетевой диск и ресурс расположены в разных регионах
             REGION_MISMATCH = 6;
 
-            // Ресурс не доступен (заблокирован или заархивирован)
+            // Ресурс не доступен для подключения
             RESOURCE_UNAVAILABLE = 7;
 
             // Сервис не найден
             SERVICE_NOT_FOUND = 8;
+
+            // Временно недоступно (например, когда диск ещё в процессе создания)
+            TEMPORARILY_UNAVAILABLE = 9;
         }
     }
 }
@@ -266,11 +269,14 @@ message UnmountResponse {
             // Доступ к сервису заблокирован
             SERVICE_DISABLED = 1;
 
-            // Диск не подключен к ресурсу
+            // Диск не подключен к ресурсу или уже в процессе отключения
             MOUNT_NOT_FOUND = 2;
 
             // Сервис не найден
             SERVICE_NOT_FOUND = 3;
+
+            // Отключение от ресурса временно недоступно (например, диск ещё в процессе подключения)
+            TEMPORARILY_UNAVAILABLE = 4;
         }
     }
 }
@@ -337,21 +343,17 @@ message SetMountsRequest {
 }
 
 message SetMountsResponse {
-    oneof result {
-        // Результат запроса: список подключенных сетевых дисков
-        NetworkDriveList network_drive_list = 1;
+    // Результат запроса: список результатов подключения
+    repeated Result result = 1;
 
-        // Результат запроса: список ошибок при подключении сетевых дисков
-        ErrorList error_list = 2;
-    }
+    message Result {
+        oneof result {
+            // Успешно подключенный к ресурсу сетевой диск
+            NetworkDrive network_drive = 1;
 
-    message NetworkDriveList {
-        // Список подключенных к ресурсу сетевых дисков
-        repeated NetworkDrive network_drive = 1;
-    }
-
-    message ErrorList {
-        repeated Error error = 1;
+            // Ошибка подключения сетевого диска к ресурсу
+            Error error = 2;
+        }
     }
 
     message Error {
@@ -385,8 +387,14 @@ message SetMountsResponse {
             // Сетевой диск и ресурс расположены в разных регионах
             REGION_MISMATCH = 6;
 
-            // Ресурс не доступен (заблокирован или заархивирован)
+            // Ресурс не доступен для подключения
             RESOURCE_UNAVAILABLE = 7;
+
+            // Временно недоступно (например, когда диск ещё в процессе создания)
+            TEMPORARILY_UNAVAILABLE = 8;
+
+            // Сетевой диск уже подключен или в процессе подключения к другому ресурсу
+            ALREADY_MOUNTED_TO_ANOTHER_RESOURCE = 9;
         }
     }
 }
