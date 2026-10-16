@@ -174,6 +174,9 @@ message ResizeResponse {
 
             // Изменение размера сетевого диска уже в процессе
             ALREADY_RESIZING = 7;
+
+            // Сервис управляется кластером Kubernetes, изменение размера запрещено
+            MANAGED_BY_K8S = 8;
         }
     }
 }
@@ -237,6 +240,9 @@ message MountResponse {
 
             // Временно недоступно (например, когда диск ещё в процессе создания)
             TEMPORARILY_UNAVAILABLE = 9;
+
+            // Сервис управляется кластером Kubernetes, подключение запрещено
+            MANAGED_BY_K8S = 10;
         }
     }
 }
@@ -275,6 +281,9 @@ message UnmountResponse {
 
             // Отключение от ресурса временно недоступно (например, диск ещё в процессе подключения)
             TEMPORARILY_UNAVAILABLE = 4;
+
+            // Сервис управляется кластером Kubernetes, отключение запрещено
+            MANAGED_BY_K8S = 5;
         }
     }
 }
@@ -321,6 +330,9 @@ message GetMountsResponse {
 
             // Неверный тип ресурса
             INVALID_RESOURCE_TYPE = 2;
+
+            // Сервис управляется кластером Kubernetes, подключение запрещено
+            MANAGED_BY_K8S = 8;
         }
     }
 }
@@ -497,6 +509,7 @@ message NetworkDrive {
         enum ResourceType {
             _ = 0;
             VPS = 1;
+            K8S = 2;
         }
 
         // Статус монтирования
