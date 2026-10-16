@@ -326,9 +326,6 @@ message GetMountsResponse {
 
             // Неверный тип ресурса
             INVALID_RESOURCE_TYPE = 2;
-
-            // Сервис управляется кластером Kubernetes, подключение запрещено
-            MANAGED_BY_K8S = 8;
         }
     }
 }
@@ -399,6 +396,9 @@ message SetMountsResponse {
 
             // Ресурс не доступен (заблокирован или заархивирован)
             RESOURCE_UNAVAILABLE = 7;
+
+            // Сервис управляется кластером Kubernetes, подключение запрещено
+            MANAGED_BY_K8S = 8;
         }
     }
 }
