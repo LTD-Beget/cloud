@@ -65,6 +65,7 @@ service CloudService {
     // Поддерживаемые поля для фильтрации: `id`, `display_name`, `description`, `type`, `slug`, `region`, `ui_pinned`,
     // `project_id`, `ip`, `monitorable_resources`, `postgresql14.host`, `postgresql15.host`, `postgresql164.host`,
     // `cdn.source_domain.domain`, `cdn.resource_domain.domain`, `cdn.source_domain.source_service_display_name`, `s3.fqdn`
+    // `owner.type`, `owner.id`
     //
     // **Сортировка:**
     //
@@ -289,6 +290,9 @@ message UpdateResponse {
 
             // Невалидное описание сервиса
             INVALID_DESCRIPTION = 2;
+
+            // Сервис управляется кластером Kubernetes, изменение запрещено
+            MANAGED_BY_K8S = 3;
         }
     }
 }
@@ -300,9 +304,34 @@ message RemoveRequest {
 
 message RemoveResponse {
     // Успешное удаление сервиса
-    Success success = 1;
+    Success success = 1 [deprecated = true];
 
     message Success {
+    }
+
+    // Результат запроса
+    oneof result {
+        // Результат запроса: информация о сервисе
+        Service service = 2;
+
+        // Результат запроса: ошибка при удалении сервиса
+        Error error = 3;
+    }
+
+    message Error {
+        // Описание ошибки
+        string message = 1;
+
+        // Код ошибки
+        Code code = 2;
+
+        enum Code {
+            // Зарезервированный код ошибки
+            _ = 0;
+
+            // Сервис управляется кластером Kubernetes, удаление запрещено
+            MANAGED_BY_K8S = 1;
+        }
     }
 }
 
@@ -527,6 +556,10 @@ message Service {
     // Ранг сервиса, заполняется только при использовании соответствующей сортировки в запросе
     string display_rank = 29;
 
+    // Владелец сервиса. Владелец управляет жизненным циклом сервиса.
+    // Поле пустое для сервисов без владельца.
+    Owner owner = 31;
+
     enum Type {
         MYSQL5 = 0;
         MYSQL8 = 1;
@@ -568,7 +601,22 @@ message Service {
         // Работа с сервисом временно приостановленна по техническим причинам
         SUSPENDED_SERVICE_MAINTENANCE = 2;
     }
-}
+
+    message Owner {
+        // Тип владельца
+        Type type = 1;
+
+        // Идентификатор владельца
+        string id = 2;
+
+        enum Type {
+            // Зарезервированное значение
+            TYPE_UNKNOWN = 0;
+
+            // Владелец — кластер Kubernetes
+            K8S_CLUSTER = 1;
+        }
+    }
 
 message ServiceConfiguration {
     // Идентификатор конфигурации
