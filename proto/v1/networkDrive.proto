@@ -176,6 +176,9 @@ message ResizeResponse {
 
             // Изменение размера сетевого диска уже в процессе
             ALREADY_RESIZING = 7;
+
+            // Сервис управляется кластером Kubernetes, изменение размера запрещено
+            MANAGED_BY_K8S = 8;
         }
     }
 }
@@ -236,6 +239,9 @@ message MountResponse {
 
             // Сервис не найден
             SERVICE_NOT_FOUND = 8;
+
+            // Сервис управляется кластером Kubernetes, подключение запрещено
+            MANAGED_BY_K8S = 9;
         }
     }
 }
@@ -271,6 +277,9 @@ message UnmountResponse {
 
             // Сервис не найден
             SERVICE_NOT_FOUND = 3;
+
+            // Сервис управляется кластером Kubernetes, отключение запрещено
+            MANAGED_BY_K8S = 4;
         }
     }
 }
@@ -387,6 +396,9 @@ message SetMountsResponse {
 
             // Ресурс не доступен (заблокирован или заархивирован)
             RESOURCE_UNAVAILABLE = 7;
+
+            // Сервис управляется кластером Kubernetes, подключение запрещено
+            MANAGED_BY_K8S = 8;
         }
     }
 }
@@ -491,6 +503,7 @@ message NetworkDrive {
         enum ResourceType {
             _ = 0;
             VPS = 1;
+            K8S = 2;
         }
 
         // Статус монтирования
