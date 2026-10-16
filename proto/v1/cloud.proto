@@ -617,6 +617,7 @@ message Service {
             K8S_CLUSTER = 1;
         }
     }
+}
 
 message ServiceConfiguration {
     // Идентификатор конфигурации
