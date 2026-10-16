@@ -330,9 +330,6 @@ message GetMountsResponse {
 
             // Неверный тип ресурса
             INVALID_RESOURCE_TYPE = 2;
-
-            // Сервис управляется кластером Kubernetes, подключение запрещено
-            MANAGED_BY_K8S = 8;
         }
     }
 }
@@ -405,6 +402,9 @@ message SetMountsResponse {
 
             // Сетевой диск уже подключен к какому-либо ресурсу
             ALREADY_MOUNTED = 9;
+
+            // Сервис управляется кластером Kubernetes, подключение запрещено
+            MANAGED_BY_K8S = 10;
         }
     }
 }
