@@ -104,6 +104,7 @@ message MysqlCopy {
         MYSQL5 = 0;
         MYSQL8 = 1;
         MYSQL84 = 2;
+        MYSQL97 = 3;
     }
 }
 
